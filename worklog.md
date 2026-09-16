@@ -236,3 +236,37 @@ The admin dashboard is now password-protected (default "admin1234", changeable, 
 
 ### Stage Summary
 Customers can now register and log in to the store (`?view=auth`). The header account dropdown adapts to login state (greeting + name when logged in, login/register links when logged out). Checkout passes the logged-in customer's email with the order. All auth is client-side with localStorage persistence (registered users stored locally). Lint passes cleanly.
+
+---
+
+## Task ID: 9
+**Agent name:** PM2 Process Management (Z.ai Code main agent)
+**Task description:** Set up PM2 for production-grade process management — auto-restart on crash, memory limits, background watchdog monitoring, standalone server guard for production.
+
+### Work Log
+- Installed PM2 globally via `npm install -g pm2` (v7.0.4).
+- Created `ecosystem.config.js` with two app configs:
+  - `glamour-dev`: runs `dev-start.sh` (next dev), fork mode, max_memory_restart 500M, max_restarts 100, min_uptime 10s, autorestart, logs to dev.log/dev.error.log.
+  - `glamour`: production standalone server (disabled by default, enable after `bun run build`).
+- Created `dev-start.sh` — wrapper that kills any orphaned `next-server` processes on port 3000 BEFORE starting `next dev`. This prevents port conflicts when PM2 restarts (the key issue: `next dev` spawns child `next-server` that survives parent crash, blocking the new instance).
+- Created `server-guard.js` — production server wrapper with `uncaughtException`, `unhandledRejection`, `SIGTERM`, `SIGINT` handlers to prevent crashes from killing the server.
+- Created `watchdog.sh` — background monitor that checks server HTTP health every 5 minutes. Uses HTTP check (not PM2 status) as source of truth. Requires 2 consecutive failures before restarting (avoids false positives). Also resurrects PM2 daemon if it dies.
+- Created `start-watchdog.sh` — double-fork daemon launcher for the watchdog.
+- Created `healthcheck.sh` — standalone health check script (for cron/manual use).
+- Created `PM2-README.md` — comprehensive guide (Arabic) with all commands, troubleshooting, production deployment steps.
+- Deleted old `start-dev.sh` (replaced by PM2 + dev-start.sh).
+
+### Key fix
+- Initial PM2 setup used `cluster` mode which showed "waiting" status due to `next dev` spawning child processes. Switched to `exec_mode: "fork"` + `dev-start.sh` wrapper that cleans orphaned processes before start. Now restarts are clean.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- PM2 status: `glamour-dev` online, fork mode, PID stable, memory ~78mb.
+- HTTP: 200 in 0.099s (fast after compile).
+- Crash recovery tested: killed PID → PM2 auto-restarted with new PID → HTTP 200 restored. `dev-start.sh` cleaned orphaned `next-server` process so new instance could bind to port 3000.
+- Watchdog running (PID active), monitoring every 5 minutes.
+- `pm2 save` executed — process list persisted for auto-resurrection.
+- All 7 files created: ecosystem.config.js, dev-start.sh, server-guard.js, watchdog.sh, start-watchdog.sh, healthcheck.sh, PM2-README.md.
+
+### Stage Summary
+The dev server is now managed by PM2 with: auto-restart on crash (verified by kill test), 500MB memory limit restart, fork mode compatible with next dev, port cleanup on restart (dev-start.sh wrapper), background HTTP watchdog every 5 minutes, PM2 state saved for resurrection. Production config (standalone + server-guard.js with uncaughtException/unhandledRejection handlers) ready to enable after `bun run build`. Lint passes cleanly.
