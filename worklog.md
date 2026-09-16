@@ -102,3 +102,70 @@ A complete, polished, production-ready **Arabic beauty e-commerce store (جلو�
 
 ### Stage Summary
 The store is now a full **Amazon-style** beauty shopping experience in Arabic RTL. It includes: Amazon-style header with category search dropdown + mega-nav; advanced product browsing with sidebar filters (price, rating, brand, availability) + pagination + sort; rich product detail pages with image gallery, frequently-bought-together bundles, customer reviews with rating histogram + review submission; cart with save-for-later + free shipping progress + recommendations; 3-step checkout (address → payment → review) with card form + saved addresses/payment methods; order history with status filters + search; order detail with package tracking timeline + invoice download + reorder; wishlist; recently viewed. 172 Arabic reviews seeded across 32 products. All flows work end-to-end and lint passes cleanly.
+
+---
+
+## Task ID: 6
+**Agent name:** Admin Dashboard Builder (Z.ai Code main agent)
+**Task description:** Build a comprehensive admin dashboard (لوحة التحكم) for the existing Arabic beauty e-commerce store (جلورية), accessible via `?view=admin`, with 5 sections (dashboard, products, categories, orders, reviews), full CRUD, order timeline management, review moderation, KPIs + revenue chart, all in Arabic RTL with the existing rose/gold theme.
+
+### Work Log
+- **New admin API routes** (all `force-dynamic`, zod-validated):
+  - `src/app/api/admin/stats/route.ts` — `GET` returns aggregate stats: totalProducts, totalCategories, totalOrders, totalRevenue, pendingOrders, lowStockProducts (stock<10), totalReviews, avgRating, ordersByStatus (6 buckets), revenueByDay (last 7 days with Arabic day labels), recentOrders (last 5 with items), topProducts (top 5 by reviewCount), lowStockList (top 10 low-stock with category).
+  - `src/app/api/products/route.ts` — added `POST` (create product) with zod schema (name, description, price, oldPrice?, image, images[], categoryId, stock, brand, shades[], isFeatured/isBestseller/isNew/isChoice/prime switches, ingredients?, weight?, origin?). Verifies category exists. Returns 201 with category included. Kept existing GET unchanged.
+  - `src/app/api/products/[id]/route.ts` — added `PUT` (update, same schema) + `DELETE` (blocks with 400 Arabic message if order items reference the product; reviews cascade-delete via schema). Kept existing GET.
+  - `src/app/api/categories/route.ts` — added `POST` (create category: name, nameEn, description?, image?, icon?). Auto-generates unique slug from nameEn. Returns 201 with product count. Kept existing GET.
+  - `src/app/api/categories/[id]/route.ts` — NEW. `GET` single + `PUT` (update) + `DELETE` (returns 400 with "لا يمكن حذف فئة بها منتجات. انقلي المنتجات أولاً" if products exist).
+  - `src/app/api/reviews/route.ts` — enhanced `GET`: when no `productId` provided, returns ALL reviews (limit 200) with `product` relation joined (id, name, image). When `productId` provided, returns bare array (backward compatible — keeps ProductView working). Kept POST.
+  - `src/app/api/reviews/[id]/route.ts` — NEW. `DELETE` (deletes review + recomputes product rating & reviewCount via aggregate) + `PUT` (toggle verified / set helpful).
+- **Modified `src/app/page.tsx`**: when `view === "admin"`, renders ONLY `<AdminView />` (no Header, no Footer, no CartDrawer) so admin has its own full-screen chrome. Added `"admin"` to KNOWN_VIEWS. All other views keep the existing Header/CartDrawer/Footer wrapper.
+- **`src/components/views/AdminView.tsx`** — full-screen `h-screen` RTL dashboard shell:
+  - Right sidebar (260px, RTL): dark gradient `from-slate-900 via-slate-900 to-rose-950`, brand "جلورية | لوحة التحكم" with Sparkles logo, 5 nav items (LayoutDashboard لوحة المعلومات, Package المنتجات, Tags الفئات, ShoppingBag الطلبات, MessageSquare المراجعات) + "العودة للمتجر" (Store → ?view=home), active item highlighted with rose accent bar (framer-motion layoutId), admin user card at bottom (avatar + "مدير المتجر" + email).
+  - Topbar: hamburger (mobile), section title + subtitle, quick search input, notifications bell with rose dot, "إضافة منتج" quick button (hidden on products/categories tabs).
+  - Content area: scrollable, AnimatePresence page transitions on tab change.
+  - Tab switching via `?view=admin&tab=dashboard|products|categories|orders|reviews` (shareable URLs, default dashboard).
+  - Responsive: sidebar collapses into Sheet on mobile (hamburger opens right-side drawer).
+  - Extracted `SidebarContent` as a top-level component (not created during render) to satisfy `react-hooks/static-components` lint rule.
+- **`src/components/admin/AdminDashboard.tsx`** — stats overview:
+  - 4 KPI cards (إجمالي المنتجات / إجمالي الطلبات / إجمالي الإيرادات / متوسط التقييم) with colored icon circles + trend subtext.
+  - Revenue last 7 days: recharts `<BarChart>` with rose bars (`#e11d48` for days with revenue, `#fecdd3` for zero days), Arabic day labels, custom Tooltip.
+  - Orders by status: list of 6 status chips with colored dots + counts.
+  - Recent orders table: last 5 orders (#last8, customer, total, status badge, date).
+  - Top products: top 5 by reviewCount with rank badge + star rating + review count.
+  - Low stock alert card: grid of products with stock<10 (image, name, category, stock badge red/amber), CTA to products tab.
+- **`src/components/admin/AdminProducts.tsx` + `ProductForm.tsx`** — product management:
+  - Toolbar: search input (name/brand/description), category filter dropdown, "إضافة منتج" button, results count.
+  - Table: image thumbnail, name+brand, category, price (+ oldPrice strikethrough), stock badge (red=0, amber<10, green), flag badges (مميز rose / الأكثر مبيعاً amber / جديد emerald / اختيار جلورية purple / Prime outline), rating with stars, edit/delete actions.
+  - Pagination (10 per page) with prev/next + page indicator.
+  - `ProductForm` Dialog (max-w-3xl, scrollable): sections for المعلومات الأساسية (name, description, brand, category select), السعر والمخزون (price, oldPrice, stock), الصور (main image URL + extra images comma-separated + live preview thumbnails), تفاصيل إضافية (weight, origin, shades comma-separated, ingredients textarea), السمات والتمييز (5 switches). Save → POST (new) or PUT (edit). Toasts on success/error.
+  - Delete: AlertDialog confirm → DELETE → toast + refresh.
+- **`src/components/admin/AdminCategories.tsx` + `CategoryForm.tsx`** — category management:
+  - Toolbar: count + "إضافة فئة" button.
+  - Grid of category cards: image (with gradient overlay), name (AR + EN), product count badge, slug, edit/delete buttons.
+  - `CategoryForm` Dialog: name (AR), nameEn (EN), description, image URL + preview, icon (Lucide name). Save → POST/PUT.
+  - Delete: AlertDialog confirm → DELETE (API returns 400 with Arabic message if has products → toast error).
+- **`src/components/admin/AdminOrders.tsx`** — order management:
+  - Toolbar: search (id/customer/phone/tracking), status filter (7 options), count.
+  - Table: order # (last 8), customer name+phone, items count, total, payment method label, status badge, date, view action.
+  - Row click → opens order detail Sheet (slides from left for RTL, full-width on mobile).
+  - Sheet content: status management card (Select to change status + "تقديم الخطوة التالية" button calling PATCH with advanceTimeline:true), full timeline with checkmarks (CheckCircle2 emerald for done, Circle slate for pending, connecting line), customer info grid, payment info grid, items list with images + line totals, totals breakdown (subtotal/shipping/discount with promo code/tax/total).
+- **`src/components/admin/AdminReviews.tsx`** — review moderation:
+  - Toolbar: search (author/title/body/product name), rating filter (all/5/4/3/2/1), verified filter (all/verified/unverified), count.
+  - Table: product thumbnail+name+date, author, 5-star display, title+body (truncated 2 lines), verified toggle button (click to flip via PUT), helpful count badge, delete action.
+  - Delete: AlertDialog confirm → DELETE → toast + remove from list (product rating auto-recomputed server-side).
+  - Fetches all reviews via enhanced `/api/reviews` endpoint (with product join).
+
+### Verification
+- `bun run lint` → ✅ passes cleanly (0 errors, 0 warnings after auto-fix of unused eslint-disable directives).
+- `GET /?view=admin` → 200. `GET /?view=admin&tab=dashboard|products|categories|orders|reviews` → all 200.
+- `GET /api/admin/stats` → 200 with full payload (totalProducts=32, totalRevenue, ordersByStatus, revenueByDay 7 entries, recentOrders, topProducts, lowStockList).
+- `POST /api/products` → 201 created (verified). `PUT /api/products/[id]` → 200 updated. `DELETE /api/products/[id]` → 200 deleted.
+- `POST /api/categories` → 201 created (auto slug). `GET/PUT/DELETE /api/categories/[id]` → all work. DELETE returns 400 with Arabic message when category has products.
+- `GET /api/reviews` (no productId) → 200 returns all reviews with product join. `GET /api/reviews?productId=X` → 200 still returns bare array (backward compatible — ProductView unchanged).
+- `POST /api/reviews` → 201 (recomputes product rating). `PUT /api/reviews/[id]` (toggle verified) → 200. `DELETE /api/reviews/[id]` → 200 (recomputes product rating + reviewCount).
+- `PATCH /api/orders?id=X` with `advanceTimeline:true` → 200, advances timeline (ordered → processing → shipped → out_for_delivery → delivered) and auto-maps status.
+- Storefront views (home, shop, product) still return 200 — no regressions.
+- dev.log clean — only successful GET/POST/PUT/DELETE/PATCH requests, no runtime errors.
+
+### Stage Summary
+A complete, professional **admin dashboard (لوحة التحكم)** is now live at `?view=admin` for the جلورية beauty store. It runs as a separate full-screen app (no public Header/Footer/CartDrawer) with a dark slate→rose gradient sidebar, RTL Arabic layout, Tajawal font, and 5 fully-functional sections: (1) Dashboard with 4 KPI cards, recharts 7-day revenue bar chart, orders-by-status chips, recent orders table, top products list, and low-stock alert grid; (2) Products with searchable/filterable table, pagination, rich form dialog (all fields + image preview + 5 flag switches), and AlertDialog delete confirm; (3) Categories with image cards grid, product count badges, form dialog, and delete guard; (4) Orders with filterable table and detail Sheet showing timeline with checkmarks, status management (Select + advance-timeline button), customer/payment info, items list, and totals breakdown; (5) Reviews with star display, verified toggle (PUT), rating/verified filters, and delete with auto product-rating recompute. All API routes use zod validation, proper status codes (201/400/404/500), `force-dynamic`, and return bare arrays for list endpoints (consistent with existing patterns). Sonner toasts for all actions, loading skeletons, empty states, mobile-responsive (sidebar → Sheet). Lint passes cleanly with zero errors/warnings and the dev server reports no runtime errors.

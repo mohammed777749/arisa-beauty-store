@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -9,17 +11,24 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get("limit");
     const sort = searchParams.get("sort") ?? "newest";
 
-    if (!productId) {
-      return NextResponse.json(
-        { error: "productId required" },
-        { status: 400 }
-      );
-    }
-
     let orderBy: Record<string, "asc" | "desc"> = { createdAt: "desc" };
     if (sort === "helpful") orderBy = { helpful: "desc" };
     else if (sort === "rating_high") orderBy = { rating: "desc" };
     else if (sort === "rating_low") orderBy = { rating: "asc" };
+
+    // If no productId, return ALL reviews (with product name) — used by admin.
+    if (!productId) {
+      const reviews = await db.review.findMany({
+        orderBy,
+        take: limit ? Math.min(parseInt(limit, 10) || 200, 500) : 200,
+        include: {
+          product: {
+            select: { id: true, name: true, image: true },
+          },
+        },
+      });
+      return NextResponse.json(reviews);
+    }
 
     const reviews = await db.review.findMany({
       where: { productId },

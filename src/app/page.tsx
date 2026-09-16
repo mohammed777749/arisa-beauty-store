@@ -15,6 +15,7 @@ import OrdersView from "@/components/views/OrdersView";
 import OrderDetailView from "@/components/views/OrderDetailView";
 import WishlistView from "@/components/views/WishlistView";
 import OrderSuccessView from "@/components/views/OrderSuccessView";
+import AdminView from "@/components/views/AdminView";
 
 const KNOWN_VIEWS = [
   "home",
@@ -27,6 +28,7 @@ const KNOWN_VIEWS = [
   "order-detail",
   "wishlist",
   "order-success",
+  "admin",
 ];
 
 function PageInner() {
@@ -40,6 +42,11 @@ function PageInner() {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
   }, [view, params.get("id"), params.get("category")]);
+
+  // Admin view renders alone (no public chrome — its own full-screen layout)
+  if (view === "admin") {
+    return <AdminView />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
