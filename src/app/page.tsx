@@ -16,6 +16,7 @@ import OrderDetailView from "@/components/views/OrderDetailView";
 import WishlistView from "@/components/views/WishlistView";
 import OrderSuccessView from "@/components/views/OrderSuccessView";
 import AdminView from "@/components/views/AdminView";
+import AuthView from "@/components/views/AuthView";
 
 const KNOWN_VIEWS = [
   "home",
@@ -29,6 +30,7 @@ const KNOWN_VIEWS = [
   "wishlist",
   "order-success",
   "admin",
+  "auth",
 ];
 
 function PageInner() {
@@ -63,6 +65,7 @@ function PageInner() {
         {view === "order-detail" && <OrderDetailView />}
         {view === "wishlist" && <WishlistView />}
         {view === "order-success" && <OrderSuccessView />}
+        {view === "auth" && <AuthView />}
         {!KNOWN_VIEWS.includes(view) && <HomeView />}
       </main>
       <Footer />

@@ -30,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/store/cart";
 import { useAddresses } from "@/store/addresses";
 import { usePayments } from "@/store/payments";
+import { useCustomerAuth } from "@/store/customer-auth";
 import {
   formatPrice,
   CURRENCY,
@@ -85,7 +86,8 @@ export default function CheckoutView() {
 
   const cards = usePayments((s) => s.cards);
   const addCard = usePayments((s) => s.addCard);
-  const defaultCard = usePayments((s) => s.getDefault);
+
+  const customer = useCustomerAuth((s) => s.current);
 
   const [step, setStep] = useState(1);
   const [selectedAddrId, setSelectedAddrId] = useState<string>("");
@@ -203,7 +205,7 @@ export default function CheckoutView() {
         address: {
           customerName: selectedAddress.name,
           customerPhone: selectedAddress.phone,
-          customerEmail: "",
+          customerEmail: customer?.email ?? "",
           city: selectedAddress.city,
           address: `${selectedAddress.district} - ${selectedAddress.details}${
             selectedAddress.landmark ? ` (${selectedAddress.landmark})` : ""

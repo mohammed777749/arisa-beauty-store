@@ -208,3 +208,31 @@ A complete, professional **admin dashboard (لوحة التحكم)** is now live
 
 ### Stage Summary
 The admin dashboard is now password-protected (default "admin1234", changeable, resettable) with an eye-icon show/hide toggle on all password fields. Image uploads in product/category forms are now drag-and-drop friendly (or URL paste) with live preview. Dark mode is available site-wide (store header + admin topbar) using next-themes with the existing rose-tinted dark palette. Lint passes cleanly.
+
+---
+
+## Task ID: 8
+**Agent name:** Customer Authentication (Z.ai Code main agent)
+**Task description:** Add customer login/registration system for the store (shopper accounts) — register, login, logout, account dropdown in header, checkout prefill from logged-in customer.
+
+### Work Log
+- Created `src/store/customer-auth.ts` Zustand store (persisted to localStorage) with: `users[]` (local registered users "database"), `current` (logged-in user public data), `isAuthenticated`, `register({name,email,phone,password})` (validates min 6 chars, unique email, hashes password with FNV-1a), `login(email,password)`, `logout`, `updateProfile`.
+- Created `src/components/views/AuthView.tsx` (`?view=auth`) — two-column auth page: left side branding ("انضمي إلى عائلة جلورية" + value props: تسوقي أسرع، تتبعي طلباتكِ، دفع آمن), right side form card with tabs (تسجيل الدخول / حساب جديد). Login form: email + password with eye toggle. Register form: name + email + phone + password with eye toggle. All fields with leading icons. Redirects to home (or cart if items) on success. Reads `?mode=register` param to default to register tab. "متابعة كزائرة" link for guests.
+- Added `auth` to KNOWN_VIEWS in `src/app/page.tsx` and renders `<AuthView />`.
+- Updated `src/components/Header.tsx` account dropdown:
+  - When logged out: shows "مرحباً، تسجيل الدخول / حسابي والقوائم", dropdown has "تسجيل الدخول" (→ ?view=auth), "إنشاء حساب جديد" (→ ?view=auth&mode=register), طلباتي, قائمة الأمنيات.
+  - When logged in: shows "مرحباً، [first name] / حسابي", dropdown has customer name + email, طلباتي, قائمة الأمنيات, عناويني وطرق الدفع, تسجيل الخروج.
+  - Added `suppressHydrationWarning` on trigger button, `useCustomerAuth` hook, `toast` for logout confirmation.
+  - Fixed logout: used `onSelect` instead of `onClick` on DropdownMenuItem (Radix requires onSelect for proper event handling).
+- Updated `src/components/views/CheckoutView.tsx` to import `useCustomerAuth` and pass `customer.email` as `customerEmail` in the order payload.
+- Added `LogOut`, `UserPlus`, `LogIn` icons to Header imports.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly (0 errors).
+- Tested via Agent Browser: opened `?view=auth` → saw login form with tabs → switched to register → filled name/email/phone/password → clicked "إنشاء الحساب" → redirected to home → header shows "مرحباً، سارة حسابي".
+- Opened account dropdown (via pointerdown dispatch for Radix) → shows طلباتي, قائمة الأمنيات, عناويني وطرق الدفع, تسجيل الخروج.
+- Clicked "تسجيل الخروج" → header reverted to "مرحباً، تسجيل الدخول / حسابي والقوائم" → dropdown now shows تسجيل الدخول + إنشاء حساب جديد.
+- `dev.log` clean — no runtime errors.
+
+### Stage Summary
+Customers can now register and log in to the store (`?view=auth`). The header account dropdown adapts to login state (greeting + name when logged in, login/register links when logged out). Checkout passes the logged-in customer's email with the order. All auth is client-side with localStorage persistence (registered users stored locally). Lint passes cleanly.

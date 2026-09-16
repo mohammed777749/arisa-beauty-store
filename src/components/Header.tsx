@@ -25,6 +25,9 @@ import {
   LayoutGrid,
   Sun,
   Moon,
+  LogOut,
+  UserPlus,
+  LogIn,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,6 +38,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
+import { useCustomerAuth } from "@/store/customer-auth";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +81,9 @@ export default function Header() {
   const { resolvedTheme, setTheme } = useTheme();
   const toggleTheme = () =>
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  const customer = useCustomerAuth((s) => s.current);
+  const customerHydrated = useCustomerAuth((s) => s.hasHydrated);
+  const customerLogout = useCustomerAuth((s) => s.logout);
 
   useEffect(() => {
     const onScroll = () => {
@@ -203,15 +211,28 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
+                suppressHydrationWarning
                 className="hidden shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-right transition hover:bg-white/10 md:flex"
               >
                 <User className="size-5 shrink-0 text-white/80" />
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[11px] text-white/70">مرحباً، تسجيل الدخول</span>
-                  <span className="flex items-center gap-0.5 text-xs font-bold text-white">
-                    حسابي والقوائم
-                    <ChevronDown className="size-3" />
-                  </span>
+                  {customerHydrated && customer ? (
+                    <>
+                      <span className="text-[11px] text-white/70">مرحباً، {customer.name.split(" ")[0]}</span>
+                      <span className="flex items-center gap-0.5 text-xs font-bold text-white">
+                        حسابي
+                        <ChevronDown className="size-3" />
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[11px] text-white/70">مرحباً، تسجيل الدخول</span>
+                      <span className="flex items-center gap-0.5 text-xs font-bold text-white">
+                        حسابي والقوائم
+                        <ChevronDown className="size-3" />
+                      </span>
+                    </>
+                  )}
                 </div>
               </button>
             </DropdownMenuTrigger>
@@ -219,40 +240,74 @@ export default function Header() {
               align="end"
               className="w-64 rounded-xl border-border bg-popover p-2 text-right"
             >
-              <DropdownMenuLabel className="text-sm font-extrabold text-foreground">
-                حسابي
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="?view=home" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
-                  تسجيل الدخول
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="?view=orders" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
-                  <Package className="size-4" /> طلباتي
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="?view=wishlist" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
-                  <Heart className="size-4" /> قائمة الأمنيات
-                  {wishlistHydrated && wishlistCount > 0 && (
-                    <span className="rounded-full bg-primary/10 px-1.5 text-[10px] font-bold text-primary">
-                      {wishlistCount}
-                    </span>
-                  )}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="?view=home" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
-                  <MapPin className="size-4" /> عناويني
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="?view=home" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
-                  <ListChecks className="size-4" /> طرق الدفع
-                </Link>
-              </DropdownMenuItem>
+              {customerHydrated && customer ? (
+                <>
+                  <DropdownMenuLabel className="flex flex-col gap-0.5 text-sm font-extrabold text-foreground">
+                    <span>{customer.name}</span>
+                    <span className="text-[11px] font-normal text-muted-foreground" dir="ltr">{customer.email}</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=orders" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Package className="size-4" /> طلباتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=wishlist" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Heart className="size-4" /> قائمة الأمنيات
+                      {wishlistHydrated && wishlistCount > 0 && (
+                        <span className="rounded-full bg-primary/10 px-1.5 text-[10px] font-bold text-primary">
+                          {wishlistCount}
+                        </span>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=checkout" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <MapPin className="size-4" /> عناويني وطرق الدفع
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer justify-end gap-2 rounded-lg text-sm text-rose-600 focus:text-rose-700"
+                    onSelect={() => {
+                      customerLogout();
+                      toast.success("تم تسجيل الخروج");
+                      router.push("?view=home");
+                    }}
+                  >
+                    <LogOut className="size-4" /> تسجيل الخروج
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuLabel className="text-sm font-extrabold text-foreground">
+                    مرحباً بكِ
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=auth" className="cursor-pointer justify-end gap-2 rounded-lg text-sm font-bold text-rose-600">
+                      <LogIn className="size-4" /> تسجيل الدخول
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=auth&mode=register" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <UserPlus className="size-4" /> إنشاء حساب جديد
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=orders" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Package className="size-4" /> طلباتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=wishlist" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Heart className="size-4" /> قائمة الأمنيات
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
