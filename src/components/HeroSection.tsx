@@ -90,32 +90,37 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Floating promo strip */}
-      <div className="container mx-auto -mt-8 max-w-7xl px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="grid grid-cols-2 gap-3 rounded-2xl border border-border/60 bg-card p-4 shadow-soft md:grid-cols-4"
-        >
-          {[
-            { t: "خصومات تصل إلى ٥٠٪", s: "على منتجات مختارة" },
-            { t: "شحن سريع خلال ٢٤ ساعة", s: "لكل مدن المملكة" },
-            { t: "منتجات أصلية ١٠٠٪", s: "ضمان الجودة" },
-            { t: "دفع عند الاستلام", s: "ادفعي بكل أمان" },
-          ].map((item) => (
-            <div
-              key={item.t}
-              className="flex items-center gap-2 rounded-xl bg-muted/50 p-3"
-            >
-              <Sparkles className="size-4 shrink-0 text-gold" />
-              <div>
-                <p className="text-xs font-bold text-foreground">{item.t}</p>
-                <p className="text-[11px] text-muted-foreground">{item.s}</p>
+      {/* Trust badges strip — sits cleanly below the hero, no overlap */}
+      <div className="border-y border-border/60 bg-card shadow-soft">
+        <div className="container mx-auto max-w-7xl px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-2 gap-x-4 gap-y-3 py-4 md:grid-cols-4"
+          >
+            {[
+              { t: "خصومات تصل إلى ٥٠٪", s: "على منتجات مختارة" },
+              { t: "شحن سريع خلال ٢٤ ساعة", s: "لكل مدن المملكة" },
+              { t: "منتجات أصلية ١٠٠٪", s: "ضمان الجودة" },
+              { t: "دفع عند الاستلام", s: "ادفعي بكل أمان" },
+            ].map((item) => (
+              <div
+                key={item.t}
+                className="flex items-center gap-2.5"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-gradient text-white">
+                  <Sparkles className="size-4 text-gold" />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-bold text-foreground">{item.t}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">{item.s}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
