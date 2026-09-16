@@ -23,6 +23,8 @@ import {
   Phone,
   Crown,
   LayoutGrid,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +34,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useTheme } from "next-themes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,6 +73,9 @@ export default function Header() {
   const hasHydrated = useCart((s) => s.hasHydrated);
   const wishlistCount = useWishlist((s) => s.items.length);
   const wishlistHydrated = useWishlist((s) => s.hasHydrated);
+  const { resolvedTheme, setTheme } = useTheme();
+  const toggleTheme = () =>
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
 
   useEffect(() => {
     const onScroll = () => {
@@ -258,6 +264,19 @@ export default function Header() {
           >
             <span className="text-[11px] text-white/70">المرتجعات</span>
             <span className="text-xs font-bold text-white">والطلبات</span>
+          </button>
+
+          {/* Dark mode toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            suppressHydrationWarning
+            className="hidden size-9 shrink-0 place-items-center rounded-md transition hover:bg-white/10 md:grid"
+            aria-label="تبديل الوضع الليلي"
+            title="تبديل الوضع الليلي/النهاري"
+          >
+            <Sun className="size-5 hidden dark:block" />
+            <Moon className="size-5 block dark:hidden" />
           </button>
 
           {/* Wishlist */}

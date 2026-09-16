@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Save, ImagePlus } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
+import ImageInput from "@/components/admin/ImageInput";
 import {
   Dialog,
   DialogContent,
@@ -147,16 +148,13 @@ export default function CategoryForm({
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="cat-image">رابط الصورة</Label>
-              <Input
-                id="cat-image"
-                value={values.image ?? ""}
-                onChange={(e) => set("image", e.target.value || null)}
-                placeholder="/images/cat-xxx.jpg"
-              />
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ImageInput
+              label="صورة الفئة"
+              value={values.image ?? ""}
+              onChange={(url) => set("image", url || null)}
+              placeholder="/images/cat-xxx.jpg"
+            />
             <div className="space-y-1.5">
               <Label htmlFor="cat-icon">اسم الأيقونة (Lucide)</Label>
               <Input
@@ -165,24 +163,11 @@ export default function CategoryForm({
                 onChange={(e) => set("icon", e.target.value || null)}
                 placeholder="Sparkles"
               />
+              <p className="text-xs text-muted-foreground">
+                اسم أيقونة من مكتبة Lucide (مثل Sparkles, Heart, Droplet)
+              </p>
             </div>
           </div>
-
-          {values.image && (
-            <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-              { }
-              <img
-                src={values.image}
-                alt=""
-                className="h-24 w-full rounded-md object-cover"
-              />
-            </div>
-          )}
-          {!values.image && (
-            <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-400">
-              <ImagePlus className="size-6" />
-            </div>
-          )}
         </div>
 
         <DialogFooter className="border-t border-slate-100 bg-slate-50 px-6 py-4">

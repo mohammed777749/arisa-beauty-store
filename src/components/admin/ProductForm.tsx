@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Save, ImagePlus } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
+import ImageInput from "@/components/admin/ImageInput";
 import {
   Dialog,
   DialogContent,
@@ -311,47 +312,24 @@ export default function ProductForm({
             {/* Images */}
             <section className="space-y-3">
               <h3 className="text-sm font-bold text-rose-700">الصور</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="image">الصورة الرئيسية (رابط) *</Label>
-                  <Input
-                    id="image"
-                    value={values.image}
-                    onChange={(e) => set("image", e.target.value)}
-                    placeholder="/images/prod-xxx.jpg"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="images">صور إضافية (مفصولة بفواصل)</Label>
-                  <Input
-                    id="images"
-                    value={imagesText}
-                    onChange={(e) => setImagesText(e.target.value)}
-                    placeholder="/images/a.jpg, /images/b.jpg"
-                  />
-                </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <ImageInput
+                  label="الصورة الرئيسية *"
+                  value={values.image}
+                  onChange={(url) => set("image", url)}
+                  placeholder="/images/prod-xxx.jpg"
+                />
+                <ImageInput
+                  label="صور إضافية"
+                  value={imagesText.split(",")[0]?.trim() ?? ""}
+                  onChange={(url) => setImagesText(url)}
+                  placeholder="/images/extra.jpg"
+                />
               </div>
-              {(values.image || imagesText) && (
-                <div className="flex flex-wrap gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3">
-                  {[values.image, ...imagesText.split(",").map((s) => s.trim()).filter(Boolean)]
-                    .filter((v, i, a) => v && a.indexOf(v) === i)
-                    .slice(0, 5)
-                    .map((src, i) => (
-                       
-                      <img
-                        key={i}
-                        src={src}
-                        alt=""
-                        className="size-16 rounded-md border border-slate-200 object-cover"
-                      />
-                    ))}
-                  {!values.image && (
-                    <div className="flex size-16 items-center justify-center rounded-md border border-dashed border-slate-300 text-slate-400">
-                      <ImagePlus className="size-5" />
-                    </div>
-                  )}
-                </div>
-              )}
+              <p className="text-xs text-muted-foreground">
+                يمكنكِ سحب وإفلات الصورة مباشرة، أو لصق رابط الصورة. الصور المرفوعة تُحفظ
+                كـ Base64 في قاعدة البيانات (حتى ١.٥ ميجابايت لكل صورة).
+              </p>
             </section>
 
             {/* Details */}

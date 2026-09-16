@@ -169,3 +169,42 @@ The store is now a full **Amazon-style** beauty shopping experience in Arabic RT
 
 ### Stage Summary
 A complete, professional **admin dashboard (لوحة التحكم)** is now live at `?view=admin` for the جلورية beauty store. It runs as a separate full-screen app (no public Header/Footer/CartDrawer) with a dark slate→rose gradient sidebar, RTL Arabic layout, Tajawal font, and 5 fully-functional sections: (1) Dashboard with 4 KPI cards, recharts 7-day revenue bar chart, orders-by-status chips, recent orders table, top products list, and low-stock alert grid; (2) Products with searchable/filterable table, pagination, rich form dialog (all fields + image preview + 5 flag switches), and AlertDialog delete confirm; (3) Categories with image cards grid, product count badges, form dialog, and delete guard; (4) Orders with filterable table and detail Sheet showing timeline with checkmarks, status management (Select + advance-timeline button), customer/payment info, items list, and totals breakdown; (5) Reviews with star display, verified toggle (PUT), rating/verified filters, and delete with auto product-rating recompute. All API routes use zod validation, proper status codes (201/400/404/500), `force-dynamic`, and return bare arrays for list endpoints (consistent with existing patterns). Sonner toasts for all actions, loading skeletons, empty states, mobile-responsive (sidebar → Sheet). Lint passes cleanly with zero errors/warnings and the dev server reports no runtime errors.
+
+---
+
+## Task ID: 7
+**Agent name:** Auth + Image Upload + Dark Mode (Z.ai Code main agent)
+**Task description:** Add password authentication to the admin dashboard (with eye icon toggle + password reset), simplify image upload (drag & drop), and add dark mode.
+
+### Work Log
+- Created `src/store/admin-auth.ts` Zustand store (persisted to localStorage) with: `passwordHash` (FNV-1a hash with salt), `isAuthenticated`, `login(verify)`, `logout`, `changePassword(old,new)`, `resetPassword()`. Default password = "admin1234".
+- Created `src/components/admin/AdminLogin.tsx` — full-screen dark rose gradient login with password field, **eye icon toggle** (show/hide password), login button, default-password hint, and "back to store" link.
+- Created `src/components/admin/ChangePasswordDialog.tsx` — dialog with 3 fields (current, new, confirm) each with its own eye toggle, validation (min 6 chars, match confirm), and "نسيت كلمة السر؟ إعادة التعيين" button that resets to default + logs out.
+- Updated `src/components/views/AdminView.tsx`:
+  - Shows AdminLogin when not authenticated (gate).
+  - Added "تغيير كلمة السر" nav item + "تسجيل الخروج" button in sidebar user card.
+  - Added dark mode toggle button (Sun/Moon) in topbar with `suppressHydrationWarning` + CSS-only icon swap (`hidden dark:block`).
+  - Added dark variant classes (`dark:bg-slate-950`, `dark:bg-slate-900`, etc.) throughout.
+- Created `src/components/admin/ImageInput.tsx` — image input with 3 modes: **drag & drop** a file (converts to base64 data URL), **click to browse**, or **paste/type a URL**. Shows preview thumbnail with remove button. Validates file type + size (<1.5MB).
+- Replaced plain URL text inputs in `ProductForm.tsx` and `CategoryForm.tsx` with the new `ImageInput` component for both main image and extra images.
+- Added dark mode to the public store:
+  - Created `src/components/theme-provider.tsx` wrapping `next-themes` ThemeProvider.
+  - Updated `src/app/layout.tsx` to wrap children in ThemeProvider (attribute="class", defaultTheme="light", enableSystem=false).
+  - Added dark mode toggle button (Sun/Moon) in `Header.tsx` (next to wishlist button) with suppressHydrationWarning + CSS-only icon swap.
+- Verified existing `globals.css` already has `.dark` variable overrides (rose-tinted dark palette).
+
+### Bug fixes
+- Initial `useEffect(() => setMounted(true))` pattern triggered `react-hooks/set-state-in-effect` lint error. Fixed by switching to `useTheme().resolvedTheme` + `suppressHydrationWarning` + CSS-only icon swap (`hidden dark:block` / `block dark:hidden`) — no mounted flag needed, no hydration mismatch.
+- Removed unused `ImagePlus` imports from ProductForm and CategoryForm after switching to ImageInput.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly (0 errors).
+- Admin login flow tested via Agent Browser: opened `?view=admin` → saw login screen with password field + eye toggle → entered `admin1234` → clicked login → landed on dashboard.
+- Change password dialog tested: opens from sidebar, shows 3 fields each with eye toggle, has reset button.
+- Dark mode tested: toggled in admin topbar → `document.documentElement.className` includes "dark" → toggled back to light. Also toggled in store header → confirmed dark class applied.
+- Image upload tested: opened product form → saw "رفع"/"رابط" tab toggle + drag-drop zone "اسحبي الصورة هنا أو انقري للاختيار".
+- All routes return 200: `/`, `/?view=admin`.
+- `dev.log` clean — no runtime errors.
+
+### Stage Summary
+The admin dashboard is now password-protected (default "admin1234", changeable, resettable) with an eye-icon show/hide toggle on all password fields. Image uploads in product/category forms are now drag-and-drop friendly (or URL paste) with live preview. Dark mode is available site-wide (store header + admin topbar) using next-themes with the existing rose-tinted dark palette. Lint passes cleanly.
