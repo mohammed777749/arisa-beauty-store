@@ -62,3 +62,43 @@ Theme: Rose/pink/gold elegant feminine design. RTL Arabic layout.
 
 ### Stage Summary
 A complete, polished, production-ready **Arabic beauty e-commerce store (جلورية)** is now live on `/` with RTL layout, Tajawal Arabic font, and an elegant rose/pink/gold feminine theme. The store has 6 product categories and 32 seeded products with real Arabic copy, prices in Saudi Riyal, discounts, shades, ratings, and review counts. All shopping flows work end-to-end: browse → product detail → add to cart (persisted to localStorage) → cart with promo codes → checkout form → order creation via API → order success page. The UI is fully responsive with a mobile menu, sticky header, sticky-to-bottom footer, and Framer Motion animations throughout. Lint passes cleanly and the dev server reports no errors.
+
+---
+
+## Task ID: 5
+**Agent name:** Amazon-style Enhancement (Z.ai Code main agent)
+**Task description:** Transform the existing beauty store into an Amazon-style full-featured shopping experience: enhanced browsing with advanced filters, product detail with gallery + reviews + bundles, cart with save-for-later, multi-step checkout with payment integration, order history, order tracking, wishlist, recently viewed.
+
+### Work Log
+- Enhanced Prisma schema: added `Review` model (productId, author, rating, title, body, helpful, verified, createdAt). Added fields to `Product` (isChoice, prime, ingredients, weight, origin) and `Order` (paymentMethod, paymentStatus, trackingNumber, estimatedDelivery, timeline, subtotal, shipping, discount, tax, promoCode). Ran `db:generate` + `db:push`.
+- Updated `src/lib/seed-data.ts` with new product fields (ingredients, weight, origin, isChoice, prime) and added `generateReviews()` + `reviewCountForProduct()` helpers generating Arabic reviews (author names, titles, bodies, helpful counts, timestamps).
+- Ran seed script (`prisma/seed.ts`) directly → seeded 6 categories, 32 products, **172 reviews** with real Arabic copy.
+- New API routes: `GET/POST /api/reviews` (with zod validation, recompute product rating on insert), `GET /api/orders?id=X` (single order with items), `PATCH /api/orders?id=X` (advance timeline), enhanced `GET /api/products` (minPrice, maxPrice, rating, brand, prime, inStock, isChoice, page, limit, total count), enhanced `GET /api/products/[id]` (includes reviews), enhanced `POST /api/orders` (address object, paymentMethod, subtotal/shipping/discount/tax/totals, trackingNumber, estimatedDelivery, timeline, stock decrement).
+- New Zustand stores: `wishlist.ts` (product IDs, toggle/remove), `recentlyViewed.ts` (max 10, most recent first), `addresses.ts` (saved addresses with default), `payments.ts` (saved cards, masked, no CVV).
+- Amazon-style Header: location selector (التوصيل إلى الرياض), search bar with category dropdown (كل الأقسام + 6 categories), account dropdown (حسابي والقوائم), returns & orders (المرتجعات والطلبات), wishlist button, cart with badge, mega-nav (الكل, عروض اليوم, الأكثر مبيعاً, جديدنا, بطاقات الهدايا, تتبع طلبك, تواصلي معنا).
+- Enhanced ShopView/SearchView: breadcrumb, left sidebar filters (department, customer reviews rating, price range + quick ranges, brand checkboxes, availability, shades), toolbar (results count, sort dropdown, view toggle), pagination.
+- Enhanced ProductView: image gallery (main + thumbnails), breadcrumb, brand link, star rating + review count link, "اختيار جلورية" badge, price with savings, prime delivery badge, stock status, shade swatches, quantity selector, gold "أضيفي إلى السلة" + orange "اشتري الآن" + wishlist buttons, "اشترِ معاً ووفّري" (frequently bought together) bundle, "عملاء اشتروا هذا المنتج اشتروا أيضاً" carousel, rating histogram, review list with helpful votes, review form modal, recently viewed strip.
+- Enhanced CartView: free shipping progress bar, items with save-for-later + delete, "حفظ لاحقاً" section, recommendations carousel, promo code input (GLAM25, WELCOME10).
+- Multi-step CheckoutView: Step 1 (عنوان الشحن — saved addresses + new address form), Step 2 (طريقة الدفع — COD/bank transfer/credit card with card form), Step 3 (مراجعة الطلب — review + confirm), persistent order summary sidebar, Stepper indicator.
+- New OrdersView: filter tabs (آخر ٣٠ يوماً، ٦ أشهر، ٢٠٢٤، ٢٠٢٣), search orders, order cards with status badges, "عرض تفاصيل", "تتبع الطرد", "اشترِ مرة أخرى".
+- New OrderDetailView: order # badge, tracking timeline (تم الطلب→قيد التجهيز→تم الشحن→خرج للتوصيل→تم التوصيل), estimated delivery, tracking number, address card, payment method, order summary, "تنزيل الإيصال", "اشترِ مرة أخرى".
+- New WishlistView: grid of wishlisted products with "أضيفي إلى السلة" + delete.
+- New components: ProductGallery, ReviewHistogram, ReviewForm, ReviewItem, FrequentlyBoughtTogether, RelatedCarousel, RecentlyViewed, RatingFilter, ShopFilters, ShopToolbar, Pagination, LightningDeals (with countdown), AddressCard, AddressForm, CardForm, Stepper, OrderTimeline.
+- New views wired into `page.tsx`: search, orders, order-detail, wishlist (in addition to existing home, shop, product, cart, checkout, order-success).
+
+### Bug Fixes (by main agent after subagent timeout)
+- Fixed duplicate `body` variable in `src/app/api/reviews/route.ts` POST handler (renamed to `payload`) — was causing 500 compile error "the name `body` is defined multiple times".
+- Fixed `HomeView.tsx` — API now returns `{products:[...], total, page, ...}` instead of bare array; added `arr()` helper to extract `.products` for all 6 fetch calls (featured, bestsellers, newArrivals, deals, choice).
+- Fixed `ProductView.tsx` related products fetch — same `{products:[]}` format issue; added `Array.isArray` check.
+- Fixed Turbopack cache corruption — cleared `.next`, restarted dev server with daemon script (double-fork pattern) for process persistence across Bash tool calls.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Database seeded: 6 categories, 32 products, **172 reviews** (real Arabic copy).
+- API routes verified: `/api/products` (with all new filters), `/api/products/[id]` (with reviews), `/api/reviews` (GET + POST), `/api/orders` (GET list + GET single + POST create + PATCH advance), `/api/categories`.
+- All 10 views return HTTP 200: home, shop (with filters), search, product (with gallery+reviews), cart, checkout (3-step), orders, order-detail (with tracking), wishlist, order-success.
+- End-to-end flow tested via Agent Browser: browse home → view product (gallery, reviews, bundles) → add to cart → checkout (address → payment → review) → confirm order → order-success → order-detail (tracking timeline). Order created in DB with tracking number + timeline.
+- dev.log shows no runtime errors — only successful GET/POST requests.
+
+### Stage Summary
+The store is now a full **Amazon-style** beauty shopping experience in Arabic RTL. It includes: Amazon-style header with category search dropdown + mega-nav; advanced product browsing with sidebar filters (price, rating, brand, availability) + pagination + sort; rich product detail pages with image gallery, frequently-bought-together bundles, customer reviews with rating histogram + review submission; cart with save-for-later + free shipping progress + recommendations; 3-step checkout (address → payment → review) with card form + saved addresses/payment methods; order history with status filters + search; order detail with package tracking timeline + invoice download + reorder; wishlist; recently viewed. 172 Arabic reviews seeded across 32 products. All flows work end-to-end and lint passes cleanly.

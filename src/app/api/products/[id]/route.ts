@@ -9,7 +9,13 @@ export async function GET(
     const { id } = await params;
     const product = await db.product.findUnique({
       where: { id },
-      include: { category: true },
+      include: {
+        category: true,
+        reviews: {
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        },
+      },
     });
     if (!product) {
       return NextResponse.json(

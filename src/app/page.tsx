@@ -7,10 +7,27 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import HomeView from "@/components/views/HomeView";
 import ShopView from "@/components/views/ShopView";
+import SearchView from "@/components/views/SearchView";
 import ProductView from "@/components/views/ProductView";
 import CartView from "@/components/views/CartView";
 import CheckoutView from "@/components/views/CheckoutView";
+import OrdersView from "@/components/views/OrdersView";
+import OrderDetailView from "@/components/views/OrderDetailView";
+import WishlistView from "@/components/views/WishlistView";
 import OrderSuccessView from "@/components/views/OrderSuccessView";
+
+const KNOWN_VIEWS = [
+  "home",
+  "shop",
+  "search",
+  "product",
+  "cart",
+  "checkout",
+  "orders",
+  "order-detail",
+  "wishlist",
+  "order-success",
+];
 
 function PageInner() {
   const params = useSearchParams();
@@ -31,18 +48,15 @@ function PageInner() {
       <main className="flex-1">
         {view === "home" && <HomeView />}
         {view === "shop" && <ShopView />}
+        {view === "search" && <SearchView />}
         {view === "product" && <ProductView />}
         {view === "cart" && <CartView />}
         {view === "checkout" && <CheckoutView />}
+        {view === "orders" && <OrdersView />}
+        {view === "order-detail" && <OrderDetailView />}
+        {view === "wishlist" && <WishlistView />}
         {view === "order-success" && <OrderSuccessView />}
-        {![
-          "home",
-          "shop",
-          "product",
-          "cart",
-          "checkout",
-          "order-success",
-        ].includes(view) && <HomeView />}
+        {!KNOWN_VIEWS.includes(view) && <HomeView />}
       </main>
       <Footer />
     </div>

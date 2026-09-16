@@ -40,22 +40,40 @@ model Product {
   isFeatured   Boolean     @default(false)
   isBestseller Boolean     @default(false)
   isNew        Boolean     @default(false)
+  // Amazon-style enhancements
+  isChoice     Boolean     @default(false)
+  prime        Boolean     @default(true)
+  ingredients  String?
+  weight       String?
+  origin       String?
   createdAt    DateTime    @default(now())
   orderItems   OrderItem[]
+  reviews      Review[]
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  customerName  String
-  customerPhone String
-  customerEmail String?
-  city          String
-  address       String
-  notes         String?
-  total         Float
-  status        String      @default("pending")
-  items         OrderItem[]
-  createdAt     DateTime    @default(now())
+  id               String      @id @default(cuid())
+  customerName     String
+  customerPhone    String
+  customerEmail    String?
+  city             String
+  address          String
+  notes            String?
+  total            Float
+  status           String      @default("pending")
+  // Amazon-style enhancements
+  paymentMethod    String      @default("cod")
+  paymentStatus    String      @default("unpaid")
+  trackingNumber   String?
+  estimatedDelivery DateTime?
+  timeline         String?
+  subtotal         Float       @default(0)
+  shipping         Float       @default(0)
+  discount         Float       @default(0)
+  tax              Float       @default(0)
+  promoCode        String?
+  items            OrderItem[]
+  createdAt        DateTime    @default(now())
 }
 
 model OrderItem {
@@ -69,4 +87,17 @@ model OrderItem {
   image     String
   quantity  Int
   shade     String?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  author    String
+  rating    Int
+  title     String
+  body      String
+  helpful   Int      @default(0)
+  verified  Boolean  @default(true)
+  createdAt DateTime @default(now())
 }

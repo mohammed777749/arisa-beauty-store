@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, SlidersHorizontal } from "lucide-react";
+import { ChevronLeft, SearchX, SlidersHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/ProductCard";
-import ProductGrid from "@/components/ProductGrid";
 import ShopFilters from "@/components/ShopFilters";
 import ShopToolbar from "@/components/ShopToolbar";
 import Pagination from "@/components/Pagination";
@@ -40,12 +39,14 @@ const ALL_SHADES = [
   "ميتاليك ذهبي",
 ];
 
-export default function ShopView() {
+const SUGGESTIONS = ["أحمر شفاه", "عطر", "سيروم", "ماسكارا", "أرغان"];
+
+export default function SearchView() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const q = searchParams.get("q") ?? searchParams.get("search") ?? "";
   const category = searchParams.get("category");
   const sort = searchParams.get("sort") ?? "relevance";
-  const search = searchParams.get("search");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const rating = searchParams.get("rating");
@@ -62,7 +63,6 @@ export default function ShopView() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<"grid" | "list">("grid");
 
-  // Categories
   useEffect(() => {
     let active = true;
     (async () => {
@@ -79,7 +79,6 @@ export default function ShopView() {
     };
   }, []);
 
-  // Products
   useEffect(() => {
     let active = true;
     (async () => {
@@ -88,9 +87,9 @@ export default function ShopView() {
         const params = new URLSearchParams();
         params.set("page", String(page));
         params.set("limit", String(PER_PAGE));
+        if (q) params.set("search", q);
         if (category) params.set("category", category);
         if (sort) params.set("sort", sort);
-        if (search) params.set("search", search);
         if (minPrice) params.set("minPrice", minPrice);
         if (maxPrice) params.set("maxPrice", maxPrice);
         if (rating) params.set("rating", rating);
@@ -118,23 +117,15 @@ export default function ShopView() {
     return () => {
       active = false;
     };
-  }, [category, sort, search, minPrice, maxPrice, rating, brand, prime, inStock, page]);
+  }, [q, category, sort, minPrice, maxPrice, rating, brand, prime, inStock, page]);
 
-  const activeCat = categories.find((c) => c.slug === category);
-  const title = activeCat ? activeCat.name : search ? `نتائج البحث عن: "${search}"` : "كل المنتجات";
-
-  const brands = useMemo(() => {
-    // Derive brand list from currently loaded categories' products (limited; better: separate API)
-    // Fallback to common brands
-    return ["جلورية", "جلورية لوكس"];
-  }, []);
-
+  const brands = useMemo(() => ["جلورية", "جلورية لوكس"], []);
   const showShades = category === "lips" || category === "nails";
 
   const onSortChange = (v: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", v);
-    params.set("view", "shop");
+    params.set("view", "search");
     params.delete("page");
     router.push(`?${params.toString()}`);
   };
@@ -148,53 +139,42 @@ export default function ShopView() {
             الرئيسية
           </Link>
           <ChevronLeft className="size-3" />
-          <Link href="?view=shop" className="hover:text-primary">
-            المتجر
-          </Link>
-          {activeCat && (
-            <>
-              <ChevronLeft className="size-3" />
-              <span className="font-bold text-foreground">{activeCat.name}</span>
-            </>
-          )}
+          <span className="font-bold text-foreground">نتائج البحث</span>
         </div>
       </div>
 
-      {/* Page header */}
+      {/* Search header */}
       <div className="border-b border-amazon-divider bg-gradient-to-l from-rose-50 to-background">
         <div className="container mx-auto max-w-7xl px-4 py-5">
-          <motion.div
+          <motion.h1
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="text-xl font-extrabold text-foreground md:text-2xl"
           >
-            <h1 className="text-2xl font-extrabold text-foreground md:text-3xl">
-              {title}
-            </h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              {activeCat?.description ||
-                "تصفحي مجموعتنا الكاملة من منتجات التجميل الفاخرة المختارة بعناية لكِ"}
-            </p>
-          </motion.div>
+            نتائج البحث عن:{" "}
+            <span className="text-primary">&ldquo;{q}&rdquo;</span>
+          </motion.h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            عُثر على <span className="font-bold text-foreground">{total}</span> نتيجة
+          </p>
         </div>
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 py-5">
         <div className="grid gap-5 lg:grid-cols-[230px_1fr]">
-          {/* Sidebar filters - desktop */}
           <div className="hidden lg:sticky lg:top-28 lg:block lg:h-fit">
             <ShopFilters
               categories={categories}
               brands={brands}
               total={total}
+              view="search"
               showShades={showShades}
               shades={showShades ? ALL_SHADES : []}
             />
           </div>
 
-          {/* Main */}
           <div>
-            {/* Mobile filter button */}
             <div className="mb-3 flex items-center justify-between lg:hidden">
               <Button
                 variant="outline"
@@ -223,43 +203,39 @@ export default function ShopView() {
 
             <div className="mt-4">
               {loading ? (
-                <div
-                  className={
-                    view === "grid"
-                      ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
-                      : "flex flex-col gap-3"
-                  }
-                >
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <Skeleton
-                      key={i}
-                      className={
-                        view === "grid"
-                          ? "aspect-square w-full rounded-xl"
-                          : "h-28 w-full rounded-xl"
-                      }
-                    />
+                    <Skeleton key={i} className="aspect-square w-full rounded-xl" />
                   ))}
                 </div>
               ) : products.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-12 text-center">
+                  <SearchX className="mb-3 size-12 text-muted-foreground" />
                   <p className="text-lg font-bold text-foreground">
-                    لا توجد منتجات مطابقة
+                    لم نعثر على نتائج
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    جرّبي تعديل الفلاتر أو البحث بكلمة أخرى
+                    جرّبي كلمات بحث أخرى أو تصفحي الأقسام
                   </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                    {SUGGESTIONS.map((s) => (
+                      <Link
+                        key={s}
+                        href={`?view=search&q=${encodeURIComponent(s)}`}
+                        className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium transition hover:bg-muted"
+                      >
+                        {s}
+                      </Link>
+                    ))}
+                  </div>
+                  <Button asChild className="mt-6 bg-cta-gold font-bold text-primary hover:brightness-105">
+                    <Link href="?view=shop">تصفحي كل المنتجات</Link>
+                  </Button>
                 </div>
-              ) : view === "grid" ? (
+              ) : (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {products.map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} />
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {products.map((p, i) => (
-                    <ListRow key={p.id} product={p} index={i} />
                   ))}
                 </div>
               )}
@@ -272,7 +248,6 @@ export default function ShopView() {
         </div>
       </div>
 
-      {/* Mobile filters sheet */}
       <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
         <SheetContent side="right" className="w-full overflow-y-auto p-0 sm:max-w-sm">
           <SheetHeader className="border-b bg-card p-4">
@@ -283,6 +258,7 @@ export default function ShopView() {
               categories={categories}
               brands={brands}
               total={total}
+              view="search"
               showShades={showShades}
               shades={showShades ? ALL_SHADES : []}
             />
@@ -290,19 +266,5 @@ export default function ShopView() {
         </SheetContent>
       </Sheet>
     </div>
-  );
-}
-
-function ListRow({ product, index }: { product: Product; index: number }) {
-  // Use ProductCard in a horizontal layout — for simplicity we render inline
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.2) }}
-    >
-      <ProductCard product={product} index={index} className="h-32" />
-    </motion.div>
   );
 }

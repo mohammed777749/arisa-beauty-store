@@ -12,11 +12,15 @@ import {
   ArrowLeft,
   Gift,
   Heart,
+  Crown,
 } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import CategoryCard from "@/components/CategoryCard";
 import ProductGrid from "@/components/ProductGrid";
 import SectionHeader from "@/components/SectionHeader";
+import LightningDeals from "@/components/LightningDeals";
+import RelatedCarousel from "@/components/RelatedCarousel";
+import RecentlyViewed from "@/components/RecentlyViewed";
 import { Button } from "@/components/ui/button";
 import type { CategoryWithCount, Product } from "@/lib/types";
 
@@ -25,6 +29,8 @@ export default function HomeView() {
   const [featured, setFeatured] = useState<Product[]>([]);
   const [bestsellers, setBestsellers] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [deals, setDeals] = useState<Product[]>([]);
+  const [choice, setChoice] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,25 +38,36 @@ export default function HomeView() {
     (async () => {
       setLoading(true);
       try {
-        const [catRes, featRes, bestRes, newRes] = await Promise.all([
-          fetch("/api/categories", { cache: "no-store" }),
-          fetch("/api/products?featured=true&limit=8", { cache: "no-store" }),
-          fetch("/api/products?bestseller=true&limit=8", {
-            cache: "no-store",
-          }),
-          fetch("/api/products?new=true&limit=8", { cache: "no-store" }),
-        ]);
-        const [cats, f, b, n] = await Promise.all([
+        const [catRes, featRes, bestRes, newRes, dealRes, choiceRes] =
+          await Promise.all([
+            fetch("/api/categories", { cache: "no-store" }),
+            fetch("/api/products?featured=true&limit=8", { cache: "no-store" }),
+            fetch("/api/products?bestseller=true&limit=8", { cache: "no-store" }),
+            fetch("/api/products?new=true&limit=8", { cache: "no-store" }),
+            fetch("/api/products?sort=price-asc&limit=10", { cache: "no-store" }),
+            fetch("/api/products?isChoice=true&limit=8", { cache: "no-store" }),
+          ]);
+        const [cats, f, b, n, d, c] = await Promise.all([
           catRes.json(),
           featRes.json(),
           bestRes.json(),
           newRes.json(),
+          dealRes.json(),
+          choiceRes.json(),
         ]);
         if (!active) return;
+        const arr = (x: Product[] | { products?: Product[] }) =>
+          Array.isArray(x) ? x : (x.products ?? []);
         setCategories(cats);
-        setFeatured(f);
-        setBestsellers(b);
-        setNewArrivals(n);
+        setFeatured(arr(f));
+        setBestsellers(arr(b));
+        setNewArrivals(arr(n));
+        // Filter to those with discount for lightning deals
+        const dealList = arr(d).filter(
+          (p: Product) => p.oldPrice && p.oldPrice > p.price
+        );
+        setDeals(dealList.slice(0, 10));
+        setChoice(arr(c));
       } catch (e) {
         console.error("Home fetch error:", e);
       } finally {
@@ -66,8 +83,11 @@ export default function HomeView() {
     <div className="flex flex-col">
       <HeroSection />
 
+      {/* Lightning Deals */}
+      {deals.length > 0 && <LightningDeals products={deals} />}
+
       {/* Categories */}
-      <section className="container mx-auto max-w-7xl px-4 py-16">
+      <section className="container mx-auto max-w-7xl px-4 py-10">
         <SectionHeader
           eyebrow="تسوقي حسب الفئة"
           title="اكتشفي فئاتنا المميزة"
@@ -88,21 +108,34 @@ export default function HomeView() {
         </div>
       </section>
 
+      {/* Choice (Amazon's Choice) */}
+      {choice.length > 0 && (
+        <section className="bg-rose-gradient py-10">
+          <div className="container mx-auto max-w-7xl px-4">
+            <SectionHeader
+              eyebrow="مختارات جلورية"
+              title="اختيار جلورية"
+              subtitle="منتجات انتقاها فريق الجمال لتجربة استثنائية"
+              viewAllHref="?view=shop&isChoice=true"
+            />
+            <ProductGrid products={choice} loading={loading} />
+          </div>
+        </section>
+      )}
+
       {/* Featured */}
-      <section className="bg-rose-gradient py-16">
-        <div className="container mx-auto max-w-7xl px-4">
-          <SectionHeader
-            eyebrow="مختارات جلورية"
-            title="منتجات مميزة"
-            subtitle="أبرز منتجاتنا التي اختارها فريق الجمال لدينا خصيصاً لكِ"
-            viewAllHref="?view=shop"
-          />
-          <ProductGrid products={featured} loading={loading} />
-        </div>
+      <section className="container mx-auto max-w-7xl px-4 py-10">
+        <SectionHeader
+          eyebrow="مختارات جلورية"
+          title="منتجات مميزة"
+          subtitle="أبرز منتجاتنا التي اختارها فريق الجمال لدينا خصيصاً لكِ"
+          viewAllHref="?view=shop"
+        />
+        <ProductGrid products={featured} loading={loading} />
       </section>
 
       {/* Promo banner */}
-      <section className="container mx-auto max-w-7xl px-4 py-16">
+      <section className="container mx-auto max-w-7xl px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -123,12 +156,13 @@ export default function HomeView() {
               </h3>
               <p className="mt-3 max-w-md text-white/90">
                 دليلك إلى الروائح الفاخرة — استمتعي بخصم خاص على عطور الورد
-                والمسك والعود. استخدمي الكود <span className="font-bold text-gold">GLAM25</span>
+                والمسك والعود. استخدمي الكود{" "}
+                <span className="font-bold text-gold">GLAM25</span>
               </p>
               <Button
                 asChild
                 size="lg"
-                className="mt-6 rounded-full bg-white px-7 font-bold text-primary shadow-rose hover:bg-white/90"
+                className="mt-6 rounded-md bg-cta-gold px-7 font-bold text-primary hover:brightness-105"
               >
                 <Link
                   href="?view=shop&category=perfume"
@@ -151,31 +185,31 @@ export default function HomeView() {
       </section>
 
       {/* Bestsellers */}
-      <section className="container mx-auto max-w-7xl px-4 py-16">
+      <section className="container mx-auto max-w-7xl px-4 py-10">
         <SectionHeader
           eyebrow="الأكثر طلباً"
           title="الأكثر مبيعاً"
           subtitle="المنتجات التي أحبتها عميلاتنا — جربيها واكتشفي السبب"
-          viewAllHref="?view=shop"
+          viewAllHref="?view=shop&sort=bestselling"
         />
         <ProductGrid products={bestsellers} loading={loading} />
       </section>
 
       {/* New arrivals */}
-      <section className="bg-rose-gradient py-16">
+      <section className="bg-rose-gradient py-10">
         <div className="container mx-auto max-w-7xl px-4">
           <SectionHeader
             eyebrow="وصل حديثاً"
             title="أحدث المنتجات"
             subtitle="كن أول من يجرب أحدث وصولات جلورية"
-            viewAllHref="?view=shop"
+            viewAllHref="?view=shop&sort=newest"
           />
           <ProductGrid products={newArrivals} loading={loading} />
         </div>
       </section>
 
       {/* Brand values */}
-      <section className="container mx-auto max-w-7xl px-4 py-16">
+      <section className="container mx-auto max-w-7xl px-4 py-10">
         <SectionHeader
           eyebrow="لماذا جلورية؟"
           title="تجربة تسوق استثنائية"
@@ -201,7 +235,7 @@ export default function HomeView() {
             {
               icon: RefreshCw,
               title: "إرجاع سهل",
-              desc: "استبدال أو استرجاع خلال ١٤ يوماً",
+              desc: "استبدال أو استرجاع خلال ٣٠ يوماً",
             },
           ].map((v) => (
             <motion.div
@@ -227,7 +261,7 @@ export default function HomeView() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-rose-gradient py-16">
+      <section className="bg-rose-gradient py-10">
         <div className="container mx-auto max-w-7xl px-4">
           <SectionHeader
             eyebrow="آراء عميلاتنا"
@@ -282,6 +316,9 @@ export default function HomeView() {
           </div>
         </div>
       </section>
+
+      {/* Recently viewed */}
+      <RecentlyViewed />
     </div>
   );
 }

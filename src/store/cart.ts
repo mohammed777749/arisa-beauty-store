@@ -12,6 +12,7 @@ export type CartItem = {
 
 type CartState = {
   items: CartItem[];
+  savedItems: CartItem[];
   isCartOpen: boolean;
   hasHydrated: boolean;
   setHasHydrated: (v: boolean) => void;
@@ -28,6 +29,9 @@ type CartState = {
     shade?: string | null
   ) => void;
   clearCart: () => void;
+  saveForLater: (productId: string, shade?: string | null) => void;
+  moveToCart: (productId: string, shade?: string | null) => void;
+  removeSaved: (productId: string, shade?: string | null) => void;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -42,6 +46,7 @@ export const useCart = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      savedItems: [],
       isCartOpen: false,
       hasHydrated: false,
       setHasHydrated: (v) => set({ hasHydrated: v }),
@@ -64,8 +69,7 @@ export const useCart = create<CartState>()(
       removeItem: (productId, shade) => {
         set({
           items: get().items.filter(
-            (i) =>
-              !sameItem(i, { productId, shade })
+            (i) => !sameItem(i, { productId, shade })
           ),
         });
       },
@@ -97,6 +101,45 @@ export const useCart = create<CartState>()(
         });
       },
       clearCart: () => set({ items: [] }),
+      saveForLater: (productId, shade) => {
+        const items = get().items;
+        const target = items.find((i) => sameItem(i, { productId, shade }));
+        if (!target) return;
+        const savedItems = get().savedItems.slice();
+        const sIdx = savedItems.findIndex((i) => sameItem(i, { productId, shade }));
+        if (sIdx >= 0) {
+          savedItems[sIdx] = { ...savedItems[sIdx], quantity: savedItems[sIdx].quantity + target.quantity };
+        } else {
+          savedItems.push({ ...target });
+        }
+        set({
+          items: items.filter((i) => !sameItem(i, { productId, shade })),
+          savedItems,
+        });
+      },
+      moveToCart: (productId, shade) => {
+        const savedItems = get().savedItems;
+        const target = savedItems.find((i) => sameItem(i, { productId, shade }));
+        if (!target) return;
+        const items = get().items.slice();
+        const idx = items.findIndex((i) => sameItem(i, { productId, shade }));
+        if (idx >= 0) {
+          items[idx] = { ...items[idx], quantity: items[idx].quantity + target.quantity };
+        } else {
+          items.push({ ...target });
+        }
+        set({
+          items,
+          savedItems: savedItems.filter((i) => !sameItem(i, { productId, shade })),
+        });
+      },
+      removeSaved: (productId, shade) => {
+        set({
+          savedItems: get().savedItems.filter(
+            (i) => !sameItem(i, { productId, shade })
+          ),
+        });
+      },
       openCart: () => set({ isCartOpen: true }),
       closeCart: () => set({ isCartOpen: false }),
       toggleCart: () => set({ isCartOpen: !get().isCartOpen }),

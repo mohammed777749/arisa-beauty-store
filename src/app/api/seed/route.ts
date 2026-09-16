@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { categories, products } from "@/lib/seed-data";
+import {
+  categories,
+  products,
+  generateReviews,
+  reviewCountForProduct,
+} from "@/lib/seed-data";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+
+function daysAgoDate(days: number): Date {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d;
+}
 
 export async function GET() {
   try {
+    await db.review.deleteMany();
     await db.orderItem.deleteMany();
     await db.order.deleteMany();
     await db.product.deleteMany();
@@ -26,10 +40,12 @@ export async function GET() {
       categoryMap.set(c.slug, created.id);
     }
 
-    for (const p of products) {
+    let reviewTotal = 0;
+    for (let i = 0; i < products.length; i++) {
+      const p = products[i];
       const categoryId = categoryMap.get(p.categorySlug);
       if (!categoryId) continue;
-      await db.product.create({
+      const created = await db.product.create({
         data: {
           name: p.name,
           description: p.description,
@@ -46,15 +62,40 @@ export async function GET() {
           isFeatured: p.isFeatured ?? false,
           isBestseller: p.isBestseller ?? false,
           isNew: p.isNew ?? false,
+          isChoice: p.isChoice ?? false,
+          prime: p.prime ?? true,
+          ingredients: p.ingredients ?? null,
+          weight: p.weight ?? null,
+          origin: p.origin ?? null,
         },
       });
+
+      // Seed reviews for this product
+      const count = reviewCountForProduct(i);
+      const reviews = generateReviews(i, count);
+      for (const r of reviews) {
+        await db.review.create({
+          data: {
+            productId: created.id,
+            author: r.author,
+            rating: r.rating,
+            title: r.title,
+            body: r.body,
+            helpful: r.helpful,
+            verified: r.verified,
+            createdAt: daysAgoDate(r.daysAgo),
+          },
+        });
+        reviewTotal++;
+      }
     }
 
     return NextResponse.json({
       success: true,
-      message: `Seeded ${categories.length} categories and ${products.length} products`,
+      message: `Seeded ${categories.length} categories, ${products.length} products, and ${reviewTotal} reviews`,
       categories: categories.length,
       products: products.length,
+      reviews: reviewTotal,
     });
   } catch (error) {
     console.error("Seed API error:", error);
