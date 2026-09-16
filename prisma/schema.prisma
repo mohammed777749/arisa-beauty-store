@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  nameEn      String
+  description String?
+  image       String?
+  icon        String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id           String      @id @default(cuid())
+  name         String
+  description  String
+  price        Float
+  oldPrice     Float?
+  image        String
+  images       String
+  categoryId   String
+  category     Category    @relation(fields: [categoryId], references: [id])
+  rating       Float       @default(5.0)
+  reviewCount  Int         @default(0)
+  stock        Int         @default(50)
+  brand        String      @default("جلورية")
+  shades       String?
+  isFeatured   Boolean     @default(false)
+  isBestseller Boolean     @default(false)
+  isNew        Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  city          String
+  address       String
+  notes         String?
+  total         Float
+  status        String      @default("pending")
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Float
+  image     String
+  quantity  Int
+  shade     String?
+}
