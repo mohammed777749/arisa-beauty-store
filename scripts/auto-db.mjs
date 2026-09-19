@@ -111,23 +111,33 @@ if (isBuildPhase) {
   if (shouldSeed) {
     try {
       log("تهيئة البيانات الأولية (seed)...");
-      // جرّبي node أولاً (مع strip-types)، ثم fallback لـ tsx/bun
       const seedScript = join(root, "prisma", "seed.ts");
-      try {
-        execSync(`node --experimental-strip-types "${seedScript}"`, {
-          cwd: root,
-          stdio: "inherit",
-          env: { ...process.env },
-        });
-      } catch {
-        // fallback: استخدمي tsx
-        execSync(`npx tsx "${seedScript}"`, {
-          cwd: root,
-          stdio: "inherit",
-          env: { ...process.env },
-        });
+      // جرّبي عدة طرق بالترتيب: tsx (الأفضل مع TS) → bun → node strip-types
+      const attempts = [
+        `npx --yes tsx "${seedScript}"`,
+        `bun run "${seedScript}"`,
+        `node --experimental-strip-types "${seedScript}"`,
+      ];
+      let seeded = false;
+      for (const cmd of attempts) {
+        try {
+          execSync(cmd, {
+            cwd: root,
+            stdio: "inherit",
+            env: { ...process.env },
+            timeout: 90000,
+          });
+          seeded = true;
+          break;
+        } catch {
+          // جرّبي الطريقة التالية
+        }
       }
-      log("✅ تمت تهيئة البيانات الأولية");
+      if (seeded) {
+        log("✅ تمت التهيئة التلقائية للبيانات");
+      } else {
+        warn("فشلت كل طرق التهيئة — يمكن تشغيلها يدوياً: bun run db:seed");
+      }
     } catch (e) {
       warn("فشل التهيئة التلقائية للبيانات — يمكن تشغيلها يدوياً: bun run db:seed");
       warn(String(e.message ?? e).split("\n").slice(0, 3).join("\n"));
