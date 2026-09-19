@@ -101,9 +101,9 @@ export default function ProductCard({ product, index = 0, className }: Props) {
             <Heart className="size-4" />
           </button>
 
-          {/* Quick view */}
+          {/* Quick view — أبيض دائماً مع نص داكن */}
           <div className="absolute inset-x-3 bottom-3 flex translate-y-3 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-            <span className="flex flex-1 items-center justify-center gap-2 rounded-full bg-white/90 py-2 text-xs font-bold text-foreground shadow-sm backdrop-blur">
+            <span className="flex flex-1 items-center justify-center gap-2 rounded-full bg-white py-2 text-xs font-bold text-slate-900 shadow-sm backdrop-blur">
               <Eye className="size-3.5" /> عرض سريع
             </span>
           </div>

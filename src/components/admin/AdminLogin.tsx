@@ -110,7 +110,7 @@ export default function AdminLogin() {
             <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
               <KeyRound className="size-3.5 shrink-0" />
               <span>
-                كلمة السر الافتراضية: <code className="font-bold">admin1234</code>
+                هذه المنطقة مخصصة للمدير فقط. أدخلي كلمة السر للمتابعة.
                 <br />
                 يمكنكِ تغييرها من داخل لوحة التحكم.
               </span>

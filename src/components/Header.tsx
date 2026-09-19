@@ -287,17 +287,17 @@ export default function Header() {
             </div>
           </button>
 
-          {/* Search bar */}
+          {/* Search bar — أبيض دائماً مع نص داكن ليعمل في الوضعين */}
           <form
             onSubmit={submitSearch}
             className="relative flex flex-1 items-center overflow-hidden rounded-md bg-white shadow-amazon"
             style={{ maxWidth: "100%" }}
           >
-            <div className="hidden shrink-0 items-center gap-1 border-l border-amazon-divider bg-muted/40 px-2 py-2 text-xs font-bold text-foreground hover:bg-muted sm:flex">
+            <div className="hidden shrink-0 items-center gap-1 border-l border-slate-200 bg-slate-50 px-2 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 sm:flex">
               <select
                 value={searchCategory}
                 onChange={(e) => setSearchCategory(e.target.value)}
-                className="cursor-pointer bg-transparent pr-1 text-xs font-bold outline-none"
+                className="cursor-pointer bg-transparent pr-1 text-xs font-bold text-slate-700 outline-none"
                 aria-label="قسم البحث"
               >
                 <option value="all">كل الأقسام</option>
@@ -308,15 +308,15 @@ export default function Header() {
                 <option value="perfume">العطور</option>
                 <option value="skincare">العناية بالبشرة</option>
               </select>
-              <ChevronDown className="size-3 text-muted-foreground" />
+              <ChevronDown className="size-3 text-slate-400" />
             </div>
-            <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground sm:right-auto sm:left-3" />
-            <Input
+            <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 sm:right-auto sm:left-3" />
+            <input
               type="search"
               placeholder={`ابحثي في ${BRAND.nameAr}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-10 rounded-none border-0 bg-transparent pr-9 text-sm shadow-none focus-visible:ring-0 sm:pr-3"
+              className="h-10 w-full rounded-none border-0 bg-transparent pr-9 text-sm text-slate-900 placeholder:text-slate-400 shadow-none outline-none focus:ring-0 sm:pr-3"
             />
             <button
               type="submit"
@@ -694,7 +694,7 @@ export default function Header() {
                 placeholder="ابحثي..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-10 rounded-md bg-muted/60 text-sm"
+                className="h-10 rounded-md bg-white text-sm text-slate-900 placeholder:text-slate-400"
               />
               <Button
                 type="submit"
