@@ -1,10 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-//
-// البيئة المحلية: SQLite  (DATABASE_URL=file:./db/custom.db)
-// Vercel / الإنتاج: PostgreSQL (DATABASE_URL=postgresql://...)
-// مزود قاعدة البيانات يُحدد تلقائياً حسب قيمة DATABASE_URL عبر
-// سكريبت prebuild (انظر package.json: prisma:use-pg / prisma:use-sqlite).
+// PostgreSQL schema for Vercel / production deployment
+// This is a copy of schema.prisma with provider switched to "postgresql".
+// Used by the build script: `bun run prisma:use-pg` swaps this in before generate.
 
 generator client {
   provider        = "prisma-client-js"
@@ -12,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -41,12 +37,11 @@ model Product {
   rating       Float       @default(5.0)
   reviewCount  Int         @default(0)
   stock        Int         @default(50)
-  brand        String      @default("جلورية")
+  brand        String      @default("أريسا")
   shades       String?
   isFeatured   Boolean     @default(false)
   isBestseller Boolean     @default(false)
   isNew        Boolean     @default(false)
-  // Amazon-style enhancements
   isChoice     Boolean     @default(false)
   prime        Boolean     @default(true)
   ingredients  String?
@@ -67,7 +62,6 @@ model Order {
   notes            String?
   total            Float
   status           String      @default("pending")
-  // Amazon-style enhancements
   paymentMethod    String      @default("cod")
   paymentStatus    String      @default("unpaid")
   trackingNumber   String?
