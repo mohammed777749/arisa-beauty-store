@@ -393,3 +393,29 @@ Store rebranded from "جلورية" to "أريسا — BEAUTY SALON / صالون
 
 ### Stage Summary
 WhatsApp floating button moved to bottom-right. Header logo centered using absolute positioning. Full project (195 files) pushed to GitHub at mohammed777749/arisa-beauty-store. Token secured (removed from git config after push). Lint passes cleanly.
+
+---
+
+## Task ID: 14
+**Agent name:** Revert logo center + center hero text (Z.ai Code main agent)
+**Task description:** Revert the logo centering in the header (back to its original side position), and make all hero section texts center-aligned.
+
+### Work Log
+- **Reverted logo positioning in `src/components/Header.tsx`**: removed `relative` from top bar container, changed logo Link back from `absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2` to `flex shrink-0` (original position on the right in RTL). Verified: logo is now on the side (diff 604px from screen center, not centered).
+- **Centered hero text in `src/components/HeroSection.tsx`**:
+  - Changed gradient overlay from `from-black/80 via-black/50 to-transparent` (left-dark) to `from-black/80 via-black/55 to-black/40` (top-to-bottom darker all-around) so centered text reads well on all sides.
+  - Changed content container from `items-center` to `items-center justify-center`.
+  - Changed motion div from `max-w-xl text-white` to `flex w-full max-w-2xl flex-col items-center text-center text-white`.
+  - Changed buttons container from `flex flex-wrap items-center` to `flex flex-wrap items-center justify-center`.
+  - Changed stats container from `flex items-center` to `flex items-center justify-center`, and the rating sub-div to `flex items-center justify-center`.
+  - Changed paragraph `max-w-md` to `max-w-xl`.
+  - Animation changed from `x:30` to `y:30` (fade up, since content is centered).
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Hero text alignment verified via getComputedStyle: h1=center, p=center, buttons=justify-content:center, stats present.
+- Logo reverted: logoCenter=1244, screenCenter=640, diff=604 (on the side, NOT centered).
+- dev.log clean.
+
+### Stage Summary
+Logo returned to its original side position in the header (no longer centered). All hero section texts (badge, title, description, buttons, stats) are now center-aligned with a darker top-to-bottom gradient overlay for readability. Lint passes cleanly.

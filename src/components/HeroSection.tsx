@@ -18,16 +18,15 @@ export default function HeroSection() {
           sizes="100vw"
           className="object-cover"
         />
-        {/* Gradient overlays for readability */}
-        <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Gradient overlays for readability — darker all-around so centered text reads well */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/55 to-black/40" />
 
-        <div className="container relative mx-auto flex h-full max-w-7xl items-center px-4">
+        <div className="container relative mx-auto flex h-full max-w-7xl items-center justify-center px-4">
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="max-w-xl text-white"
+            className="flex w-full max-w-2xl flex-col items-center text-center text-white"
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs font-bold backdrop-blur-md">
               <Sparkles className="size-3.5 text-gold" />
@@ -40,12 +39,12 @@ export default function HeroSection() {
                 من هنا
               </span>
             </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-white/90 drop-shadow sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/90 drop-shadow sm:text-lg">
               اكتشفي عالم أريسا من المكياج الفاخر والعطور الساحرة والعناية
-              المتكاملة. منتجات أصلية مختارة بعناية لتبرز جمالك الطبيعي.
+              المتكاملة. منتجات أصلية وخدمات تجميل احترافية لتبرز جمالكِ الطبيعي.
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <Button
                 asChild
                 size="lg"
@@ -67,7 +66,7 @@ export default function HeroSection() {
             </div>
 
             {/* Stats */}
-            <div className="mt-8 flex items-center gap-6 text-white/90">
+            <div className="mt-8 flex items-center justify-center gap-6 text-white/90">
               <div>
                 <p className="text-2xl font-extrabold text-gold">+٢٥٠</p>
                 <p className="text-xs text-white/80">منتج فاخر</p>
@@ -79,7 +78,7 @@ export default function HeroSection() {
               </div>
               <div className="h-10 w-px bg-white/20" />
               <div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-1">
                   <span className="text-2xl font-extrabold text-gold">٤.٩</span>
                   <Star className="size-4 fill-gold text-gold" />
                 </div>
