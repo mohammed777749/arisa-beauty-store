@@ -419,3 +419,39 @@ WhatsApp floating button moved to bottom-right. Header logo centered using absol
 
 ### Stage Summary
 Logo returned to its original side position in the header (no longer centered). All hero section texts (badge, title, description, buttons, stats) are now center-aligned with a darker top-to-bottom gradient overlay for readability. Lint passes cleanly.
+
+---
+
+## Task ID: 15
+**Agent name:** Vercel Deployment Prep (Z.ai Code main agent)
+**Task description:** Prepare the project for real hosting on Vercel — database swap to PostgreSQL, config changes, deployment guide, push to GitHub.
+
+### Work Log
+- Updated `next.config.ts`: removed `output: "standalone"` (Vercel manages build), added `images.remotePatterns` (allow all https/http hosts), added `experimental.serverActions.bodySizeLimit: "10mb"` for image uploads.
+- Created `prisma/schema.pg.prisma` — full PostgreSQL version of the schema (same models, provider switched to "postgresql"). Added `binaryTargets` for Vercel's Linux environments.
+- Saved current SQLite schema as `prisma/schema.sqlite.prisma` for local dev.
+- Created `scripts/switch-db.mjs` — switches Prisma provider between SQLite/PostgreSQL by copying the right schema file + running `prisma generate`.
+- Updated `package.json`:
+  - Renamed project to `arisa-beauty-store`, version 1.0.0.
+  - `dev`: removed `tee dev.log` (doesn't work on Vercel).
+  - `build`: `prisma generate && next build` (no standalone copy step).
+  - `start`: `next start -p $PORT` (Vercel-friendly).
+  - Added `postinstall: prisma generate` (auto-runs on Vercel install).
+  - Added `vercel-build: prisma generate && next build`.
+  - Added `prisma:use-pg` / `prisma:use-sqlite` scripts.
+  - Added `db:seed` script.
+- Updated `src/lib/db.ts`: reduced log verbosity in production (errors+warnings only), kept global cache in both dev+prod (avoids connection exhaustion on serverless).
+- Created `vercel.json`: framework=nextjs, buildCommand, installCommand, regions=sin1, security headers (x-content-type-options, x-frame-options, referrer-policy), image cache headers.
+- Created `.env.example` documenting required env vars (DATABASE_URL).
+- Updated `.gitignore` to allow `.env.example` (was excluded by `.env*`).
+- Created `VERCEL-DEPLOY.md` — comprehensive Arabic deployment guide: 6 steps (create PostgreSQL DB on Vercel/Neon, set env vars, switch to PG, push schema, seed, deploy via GitHub/CLI), notes on read-only filesystem + base64 images + body size, troubleshooting table, pre-deploy checklist.
+- Pushed all changes to GitHub (commit 23b8ddc).
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Dev server still runs (HTTP 200) after config changes.
+- `node scripts/switch-db.mjs sqlite` works (switches back to SQLite + generates).
+- GitHub push successful (token removed from remote URL after).
+
+### Stage Summary
+Project is now Vercel-ready: removed standalone output, added PostgreSQL schema + switch script, configured next.config for images + body size, added vercel.json with security headers, updated package.json with vercel-build/postinstall scripts, wrote comprehensive VERCEL-DEPLOY.md guide. All pushed to GitHub. Next steps for the user: create Vercel Postgres DB, set DATABASE_URL env var, run `prisma:use-pg && db:push && db:seed`, deploy via Vercel dashboard.
