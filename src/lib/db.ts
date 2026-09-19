@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 // Bust the global cache when the schema changes (e.g., new models added).
-const SCHEMA_STAMP = 'v2-reviews'
+const SCHEMA_STAMP = 'v3-services'
 
 function createClient() {
   return new PrismaClient({

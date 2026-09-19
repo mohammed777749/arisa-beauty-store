@@ -101,3 +101,38 @@ model Review {
   verified  Boolean  @default(true)
   createdAt DateTime @default(now())
 }
+
+model Service {
+  id           String           @id @default(cuid())
+  name         String
+  description  String
+  price        Float
+  oldPrice     Float?
+  duration     Int
+  image        String
+  category     String
+  icon         String
+  isFeatured   Boolean          @default(false)
+  isPopular    Boolean          @default(false)
+  isActive     Boolean          @default(true)
+  rating       Float            @default(5.0)
+  reviewCount  Int              @default(0)
+  whatIncluded String?
+  createdAt    DateTime         @default(now())
+  bookings     ServiceBooking[]
+}
+
+model ServiceBooking {
+  id             String   @id @default(cuid())
+  serviceId      String
+  service        Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customerName   String
+  customerPhone  String
+  customerEmail  String?
+  preferredDate  String
+  preferredTime  String
+  notes          String?
+  status         String   @default("pending")
+  totalPrice     Float
+  createdAt      DateTime @default(now())
+}

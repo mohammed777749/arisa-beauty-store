@@ -159,3 +159,91 @@ export const ORDER_STATUS: Record<
   delivered: { label: "تم التوصيل", color: "green", step: 4 },
   cancelled: { label: "ملغي", color: "rose", step: 0 },
 };
+
+// ===== Beauty services (Task ID: 10) =====
+
+export type Service = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  oldPrice: number | null;
+  duration: number;
+  image: string;
+  category: string;
+  icon: string;
+  isFeatured: boolean;
+  isPopular: boolean;
+  isActive: boolean;
+  rating: number;
+  reviewCount: number;
+  whatIncluded: string | null; // JSON string array
+  createdAt: string;
+};
+
+export type ServiceBooking = {
+  id: string;
+  serviceId: string;
+  service?: Service;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string | null;
+  preferredDate: string;
+  preferredTime: string;
+  notes?: string | null;
+  status: string;
+  totalPrice: number;
+  createdAt: string;
+};
+
+export type ServiceCategory = {
+  slug: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  icon: string;
+  count?: number;
+};
+
+export function parseService<T extends Service>(s: T) {
+  let whatIncluded: string[] = [];
+  if (s.whatIncluded) {
+    try {
+      whatIncluded = JSON.parse(s.whatIncluded) as string[];
+    } catch {
+      whatIncluded = [];
+    }
+  }
+  return { ...s, whatIncluded: whatIncluded };
+}
+
+// Booking status helpers (Arabic labels + colors)
+export const BOOKING_STATUS: Record<
+  string,
+  { label: string; color: string }
+> = {
+  pending: { label: "قيد الانتظار", color: "amber" },
+  confirmed: { label: "مؤكد", color: "teal" },
+  completed: { label: "مكتمل", color: "green" },
+  cancelled: { label: "ملغي", color: "rose" },
+};
+
+// Convert minutes → Arabic humanized duration (e.g. "ساعتين و٤٠ دقيقة")
+export function formatDurationAr(minutes: number): string {
+  if (minutes <= 0) return "—";
+  const arabicDigits = (n: number) =>
+    n.toString().replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[parseInt(d, 10)]);
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const parts: string[] = [];
+  if (h > 0) {
+    if (h === 1) parts.push("ساعة");
+    else if (h === 2) parts.push("ساعتين");
+    else if (h >= 3 && h <= 10) parts.push(`${arabicDigits(h)} ساعات`);
+    else parts.push(`${arabicDigits(h)} ساعة`);
+  }
+  if (m > 0) {
+    parts.push(`${arabicDigits(m)} دقيقة`);
+  }
+  return parts.join(" و");
+}

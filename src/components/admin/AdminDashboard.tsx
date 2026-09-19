@@ -12,6 +12,8 @@ import {
   PackageOpen,
   Crown,
   Loader2,
+  Sparkles,
+  CalendarCheck,
 } from "lucide-react";
 import {
   BarChart,
@@ -27,7 +29,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatPrice, CURRENCY, ORDER_STATUS } from "@/lib/types";
+import {
+  formatPrice,
+  CURRENCY,
+  ORDER_STATUS,
+  BOOKING_STATUS,
+  type ServiceBooking,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type Stats = {
@@ -64,6 +72,12 @@ type Stats = {
     image: string;
     category?: { name: string } | null;
   }>;
+  // Services + bookings
+  totalServices: number;
+  totalBookings: number;
+  pendingBookings: number;
+  bookingsByStatus: Record<string, number>;
+  recentBookings: Array<ServiceBooking>;
 };
 
 const STATUS_DOT: Record<string, string> = {
@@ -145,6 +159,38 @@ export default function AdminDashboard() {
       icon: Star,
       color: "bg-yellow-100 text-yellow-700",
       trend: `${stats.totalReviews} مراجعة`,
+      trendColor: "text-slate-500",
+    },
+    {
+      label: "الخدمات التجميلية",
+      value: stats.totalServices.toString(),
+      icon: Sparkles,
+      color: "bg-fuchsia-100 text-fuchsia-700",
+      trend: "خدمات نشطة",
+      trendColor: "text-slate-500",
+    },
+    {
+      label: "الحجوزات",
+      value: stats.totalBookings.toString(),
+      icon: CalendarCheck,
+      color: "bg-teal-100 text-teal-700",
+      trend: `${stats.pendingBookings} بانتظار التأكيد`,
+      trendColor: "text-teal-600",
+    },
+    {
+      label: "منتجات منخفضة المخزون",
+      value: stats.lowStockProducts.toString(),
+      icon: AlertTriangle,
+      color: "bg-orange-100 text-orange-700",
+      trend: "تحتاج إعادة طلب",
+      trendColor: "text-orange-600",
+    },
+    {
+      label: "المراجعات",
+      value: stats.totalReviews.toString(),
+      icon: Crown,
+      color: "bg-purple-100 text-purple-700",
+      trend: `متوسط ${stats.avgRating.toFixed(1)}`,
       trendColor: "text-slate-500",
     },
   ];
@@ -361,6 +407,81 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent bookings */}
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <div className="flex items-center gap-2">
+            <CalendarCheck className="size-5 text-teal-600" />
+            <CardTitle className="text-base font-bold text-slate-900">أحدث الحجوزات</CardTitle>
+            <Badge variant="secondary" className="bg-teal-100 text-teal-700">
+              {stats.totalBookings}
+            </Badge>
+          </div>
+          <Link href="?view=admin&tab=bookings">
+            <Button variant="ghost" size="sm" className="text-rose-600 hover:bg-rose-50 hover:text-rose-700">
+              عرض الكل
+              <ArrowLeft className="size-4" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="px-0">
+          {stats.recentBookings.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+              <CalendarCheck className="size-10 text-slate-300" />
+              <p className="text-sm text-slate-500">لا توجد حجوزات بعد</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-sm">
+                <thead className="border-y border-slate-100 bg-slate-50/50 text-xs text-slate-500">
+                  <tr>
+                    <th className="px-4 py-2.5 font-medium">رقم الحجز</th>
+                    <th className="px-4 py-2.5 font-medium">الخدمة</th>
+                    <th className="px-4 py-2.5 font-medium">العميلة</th>
+                    <th className="px-4 py-2.5 font-medium">الموعد</th>
+                    <th className="px-4 py-2.5 font-medium">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentBookings.map((b) => {
+                    const meta = BOOKING_STATUS[b.status] ?? { label: b.status, color: "slate" };
+                    const colorMap: Record<string, string> = {
+                      amber: "bg-amber-100 text-amber-700 border-amber-200",
+                      teal: "bg-teal-100 text-teal-700 border-teal-200",
+                      green: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                      rose: "bg-rose-100 text-rose-700 border-rose-200",
+                      slate: "bg-slate-100 text-slate-700 border-slate-200",
+                    };
+                    return (
+                      <tr key={b.id} className="border-b border-slate-50 last:border-0 hover:bg-rose-50/30">
+                        <td className="px-4 py-3 font-mono text-xs text-slate-700">
+                          #{b.id.slice(-8).toUpperCase()}
+                        </td>
+                        <td className="px-4 py-3 font-medium text-slate-900">
+                          {b.service?.name ?? "—"}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700">{b.customerName}</td>
+                        <td className="px-4 py-3 text-xs text-slate-500">
+                          {b.preferredDate} · {b.preferredTime}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant="outline"
+                            className={cn("border", colorMap[meta.color] ?? colorMap.slate)}
+                          >
+                            {meta.label}
+                          </Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Low stock alert */}
       <Card className="border-amber-200 bg-amber-50/40 shadow-sm">

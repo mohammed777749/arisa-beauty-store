@@ -2,6 +2,7 @@ import { db } from "../src/lib/db";
 import {
   categories,
   products,
+  services,
   generateReviews,
   reviewCountForProduct,
 } from "../src/lib/seed-data";
@@ -16,6 +17,8 @@ async function seed() {
   console.log("🌱 Seeding database...");
 
   // Clean existing data (idempotent)
+  await db.serviceBooking.deleteMany();
+  await db.service.deleteMany();
   await db.review.deleteMany();
   await db.orderItem.deleteMany();
   await db.order.deleteMany();
@@ -93,6 +96,29 @@ async function seed() {
   }
   console.log(`  ✓ ${products.length} products inserted`);
   console.log(`  ✓ ${reviewTotal} reviews inserted`);
+
+  // Insert services
+  for (const s of services) {
+    await db.service.create({
+      data: {
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        oldPrice: s.oldPrice ?? null,
+        duration: s.duration,
+        image: s.image,
+        category: s.category,
+        icon: s.icon,
+        isFeatured: s.isFeatured ?? false,
+        isPopular: s.isPopular ?? false,
+        isActive: true,
+        rating: s.rating,
+        reviewCount: s.reviewCount,
+        whatIncluded: JSON.stringify(s.whatIncluded),
+      },
+    });
+  }
+  console.log(`  ✓ ${services.length} services inserted`);
 
   console.log("✅ Seeding complete!");
   await db.$disconnect();

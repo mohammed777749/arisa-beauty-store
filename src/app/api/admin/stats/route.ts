@@ -16,6 +16,11 @@ export async function GET() {
       reviewsAgg,
       recentOrdersRaw,
       topProductsRaw,
+      totalServices,
+      totalBookings,
+      pendingBookings,
+      recentBookingsRaw,
+      bookingsByStatusRaw,
     ] = await Promise.all([
       db.product.count(),
       db.category.count(),
@@ -34,6 +39,18 @@ export async function GET() {
         orderBy: { reviewCount: "desc" },
         take: 5,
         include: { category: true },
+      }),
+      db.service.count({ where: { isActive: true } }),
+      db.serviceBooking.count(),
+      db.serviceBooking.count({ where: { status: "pending" } }),
+      db.serviceBooking.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { service: true },
+      }),
+      db.serviceBooking.groupBy({
+        by: ["status"],
+        _count: { _all: true },
       }),
     ]);
 
@@ -55,6 +72,19 @@ export async function GET() {
       const s = (o.status || "pending") as string;
       if (s in ordersByStatus) ordersByStatus[s] += 1;
       else ordersByStatus[s] = (ordersByStatus[s] || 0) + 1;
+    }
+
+    // Bookings by status
+    const bookingsByStatus: Record<string, number> = {
+      pending: 0,
+      confirmed: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+    for (const b of bookingsByStatusRaw) {
+      const s = (b.status || "pending") as string;
+      if (s in bookingsByStatus) bookingsByStatus[s] += b._count._all;
+      else bookingsByStatus[s] = (bookingsByStatus[s] || 0) + b._count._all;
     }
 
     // Revenue by day (last 7 days)
@@ -102,6 +132,12 @@ export async function GET() {
       recentOrders: recentOrdersRaw,
       topProducts: topProductsRaw,
       lowStockList,
+      // Services + bookings
+      totalServices,
+      totalBookings,
+      pendingBookings,
+      bookingsByStatus,
+      recentBookings: recentBookingsRaw,
     });
   } catch (error) {
     console.error("Error fetching admin stats:", error);

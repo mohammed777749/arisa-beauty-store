@@ -19,6 +19,7 @@ import {
   Moon,
   KeyRound,
   LogOut,
+  CalendarCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -31,16 +32,20 @@ import AdminProducts from "@/components/admin/AdminProducts";
 import AdminCategories from "@/components/admin/AdminCategories";
 import AdminOrders from "@/components/admin/AdminOrders";
 import AdminReviews from "@/components/admin/AdminReviews";
+import AdminServices from "@/components/admin/AdminServices";
+import AdminBookings from "@/components/admin/AdminBookings";
 import AdminLogin from "@/components/admin/AdminLogin";
 import ChangePasswordDialog from "@/components/admin/ChangePasswordDialog";
 
-type Tab = "dashboard" | "products" | "categories" | "orders" | "reviews";
+type Tab = "dashboard" | "products" | "categories" | "orders" | "reviews" | "services" | "bookings";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "لوحة المعلومات", icon: LayoutDashboard },
   { id: "products", label: "المنتجات", icon: Package },
   { id: "categories", label: "الفئات", icon: Tags },
   { id: "orders", label: "الطلبات", icon: ShoppingBag },
+  { id: "services", label: "الخدمات", icon: Sparkles },
+  { id: "bookings", label: "الحجوزات", icon: CalendarCheck },
   { id: "reviews", label: "المراجعات", icon: MessageSquare },
 ];
 
@@ -49,6 +54,8 @@ const TAB_TITLES: Record<Tab, { title: string; subtitle: string }> = {
   products: { title: "إدارة المنتجات", subtitle: "إضافة وتعديل وحذف منتجات المتجر" },
   categories: { title: "إدارة الفئات", subtitle: "تنظيم منتجاتك ضمن فئات" },
   orders: { title: "إدارة الطلبات", subtitle: "متابعة الطلبات وتحديث حالتها" },
+  services: { title: "إدارة الخدمات", subtitle: "إدارة خدمات التجميل وحجوزاتها" },
+  bookings: { title: "إدارة الحجوزات", subtitle: "متابعة حجوزات الخدمات وتأكيدها" },
   reviews: { title: "إدارة المراجعات", subtitle: "مراجعة ومراقبة تقييمات العملاء" },
 };
 
@@ -297,7 +304,7 @@ export default function AdminView() {
             <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-rose-500" />
           </button>
 
-          {tab !== "products" && tab !== "categories" && (
+          {tab !== "products" && tab !== "categories" && tab !== "services" && (
             <Button
               onClick={() => goTab("products")}
               className="hidden bg-rose-600 text-white hover:bg-rose-700 sm:flex"
@@ -323,6 +330,8 @@ export default function AdminView() {
               {tab === "products" && <AdminProducts />}
               {tab === "categories" && <AdminCategories />}
               {tab === "orders" && <AdminOrders />}
+              {tab === "services" && <AdminServices />}
+              {tab === "bookings" && <AdminBookings />}
               {tab === "reviews" && <AdminReviews />}
             </motion.div>
           </AnimatePresence>

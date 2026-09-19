@@ -1,0 +1,826 @@
+     1→// Shared seed data for the beauty e-commerce store.
+     2→// Used by both prisma/seed.ts and src/app/api/seed/route.ts
+     3→
+     4→export type SeedCategory = {
+     5→  slug: string;
+     6→  name: string;
+     7→  nameEn: string;
+     8→  description: string;
+     9→  image: string;
+    10→  icon: string;
+    11→};
+    12→
+    13→export type SeedProduct = {
+    14→  name: string;
+    15→  description: string;
+    16→  price: number;
+    17→  oldPrice?: number;
+    18→  image: string;
+    19→  images: string[];
+    20→  categorySlug: string;
+    21→  rating: number;
+    22→  reviewCount: number;
+    23→  stock: number;
+    24→  brand: string;
+    25→  shades?: string[];
+    26→  isFeatured?: boolean;
+    27→  isBestseller?: boolean;
+    28→  isNew?: boolean;
+    29→  isChoice?: boolean;
+    30→  prime?: boolean;
+    31→  ingredients?: string;
+    32→  weight?: string;
+    33→  origin?: string;
+    34→};
+    35→
+    36→export type SeedReview = {
+    37→  author: string;
+    38→  rating: number;
+    39→  title: string;
+    40→  body: string;
+    41→  helpful: number;
+    42→  verified: boolean;
+    43→  daysAgo: number;
+    44→};
+    45→
+    46→export const categories: SeedCategory[] = [
+    47→  {
+    48→    slug: "makeup",
+    49→    name: "مكياج",
+    50→    nameEn: "Makeup",
+    51→    description: "كريمات الأساس، ظلال العيون، الماسكارا وأدوات المكياج الفاخرة لإطلالة ساحرة.",
+    52→    image: "/images/cat-makeup.jpg",
+    53→    icon: "Sparkles",
+    54→  },
+    55→  {
+    56→    slug: "lips",
+    57→    name: "شفاه",
+    58→    nameEn: "Lips",
+    59→    description: "أحمر شفاه، جلوس، وأقلام تحديد لشفاه ممتلئة وجذابة طوال اليوم.",
+    60→    image: "/images/cat-lips.jpg",
+    61→    icon: "Heart",
+    62→  },
+    63→  {
+    64→    slug: "hair",
+    65→    name: "شعر",
+    66→    nameEn: "Hair",
+    67→    description: "سيرومات، شامبو، ماسكات وزيوت لعناية متكاملة بشعر صحي ولامع.",
+    68→    image: "/images/cat-hair.jpg",
+    69→    icon: "Wind",
+    70→  },
+    71→  {
+    72→    slug: "nails",
+    73→    name: "أظافر",
+    74→    nameEn: "Nails",
+    75→    description: "طلاءات أظافر جل طويلة الأمد، طقم العناية، ومستحضرات التركيب.",
+    76→    image: "/images/cat-nails.jpg",
+    77→    icon: "Hand",
+    78→  },
+    79→  {
+    80→    slug: "perfume",
+    81→    name: "عطور",
+    82→    nameEn: "Perfume",
+    83→    description: "عطور شرقية وفرنسية فاخرة بروائح الورد والمسك والعود تدوم طويلاً.",
+    84→    image: "/images/cat-perfume.jpg",
+    85→    icon: "Flower2",
+    86→  },
+    87→  {
+    88→    slug: "skincare",
+    89→    name: "عناية بالبشرة",
+    90→    nameEn: "Skincare",
+    91→    description: "سيرومات، كريمات ترطيب، غسول وواقي شمس لبشرة نضرة ومشرقة.",
+    92→    image: "/images/cat-skincare.jpg",
+    93→    icon: "Droplet",
+    94→  },
+    95→];
+    96→
+    97→export const products: SeedProduct[] = [
+    98→  // ===== Makeup =====
+    99→  {
+   100→    name: "كريم أساس فاخر بترطيب 24 ساعة",
+   101→    description:
+   102→      "كريم أساس بتغطية متوسطة وملمس حريري يوحد لون البشرة ويمنحها إشراقة طبيعية تدوم 24 ساعة. خفيف الوزن، مقاوم للعرق، ومناسب لجميع أنواع البشرة. يحتوي على حمض الهيالورونيك وفيتامين E لترطيب عميق.",
+   103→    price: 189,
+   104→    oldPrice: 245,
+   105→    image: "/images/prod-foundation.jpg",
+   106→    images: ["/images/prod-foundation.jpg", "/images/prod-eyeshadow.jpg", "/images/prod-mascara.jpg"],
+   107→    categorySlug: "makeup",
+   108→    rating: 4.8,
+   109→    reviewCount: 287,
+   110→    stock: 64,
+   111→    brand: "جلورية لوكس",
+   112→    isFeatured: true,
+   113→    isBestseller: true,
+   114→    isChoice: true,
+   115→    prime: true,
+   116→    ingredients:
+   117→      "ماء، سيكلوبنتاسيلوكسان، غليسرين، حمض الهيالورونيك، نياسيناميد، فيتامين E، ثاني أكسيد التيتانيوم، أكسيد الزنك، خلاصة الشاي الأخضر، زبدة الشيا.",
+   118→    weight: "30 مل",
+   119→    origin: "فرنسا",
+   120→  },
+   121→  {
+   122→    name: "باليت ظلال العيون الذهبية - 12 لون",
+   123→    description:
+   124→      "باليت ظلال عيون فاخر بـ 12 درجة لونية بين المات واللامع، صباغة عالية وثبات طويل. ألوان ذهبية ووردية ونود مثالية للإطلالات اليومية والمسائية. قابل للمزج بسهولة ولا يتطاير.",
+   125→    price: 156,
+   126→    oldPrice: 199,
+   127→    image: "/images/prod-eyeshadow.jpg",
+   128→    images: ["/images/prod-eyeshadow.jpg", "/images/prod-foundation.jpg", "/images/prod-mascara.jpg"],
+   129→    categorySlug: "makeup",
+   130→    rating: 4.9,
+   131→    reviewCount: 312,
+   132→    stock: 42,
+   133→    brand: "جلورية لوكس",
+   134→    isFeatured: true,
+   135→    isBestseller: true,
+   136→    isChoice: true,
+   137→    prime: true,
+   138→    ingredients:
+   139→      "تالك، ميكا، سيليكا، ماغنيسيوم ستيرات، بارافين، خلاصة الورد، فيتامين E، أصباغ طبيعية.",
+   140→    weight: "15 جم",
+   141→    origin: "كوريا الجنوبية",
+   142→  },
+   143→  {
+   144→    name: "ماسكارا الحجم الفائق المقاومة للماء",
+   145→    description:
+   146→      "ماسكارا تمنح رموشكِ حجماً وطولاً مضاعفاً بتركيبة مقاومة للماء والتلطخ. فرشاة مبتكرة تفصل كل رمشة دون تكتلات. تدوم حتى 16 ساعة وتُزال بسهولة بالماء الدافئ.",
+   147→    price: 89,
+   148→    image: "/images/prod-mascara.jpg",
+   149→    images: ["/images/prod-mascara.jpg", "/images/prod-eyeshadow.jpg"],
+   150→    categorySlug: "makeup",
+   151→    rating: 4.7,
+   152→    reviewCount: 198,
+   153→    stock: 88,
+   154→    brand: "جلورية",
+   155→    isBestseller: true,
+   156→    prime: true,
+   157→    ingredients:
+   158→      "ماء، شمع كرنوبا، شمع عسل النحل، غليسرين، حمض الستيريك، خلاصة البابونج، بانثينول، فيتامين E.",
+   159→    weight: "10 مل",
+   160→    origin: "اليابان",
+   161→  },
+   162→  {
+   163→    name: "أحمر خدود وردي بتأثير طبيعي",
+   164→    description:
+   165→      "بودرة أحمر خدود ناعمة بدرجات وردية تمنح وجنتيكِ لوناً طبيعياً ومشرقاً. قابلة للمزج بسهولة وتدوم طوال اليوم. مناسبة لجميع درجات البشرة.",
+   166→    price: 75,
+   167→    image: "/images/prod-foundation.jpg",
+   168→    images: ["/images/prod-foundation.jpg", "/images/prod-eyeshadow.jpg"],
+   169→    categorySlug: "makeup",
+   170→    rating: 4.6,
+   171→    reviewCount: 134,
+   172→    stock: 70,
+   173→    brand: "جلورية",
+   174→    isNew: true,
+   175→    prime: true,
+   176→    ingredients: "تالك، ميكا، سيليكا، خلاصة الورد، فيتامين E، أصباغ معدنية طبيعية.",
+   177→    weight: "8 جم",
+   178→    origin: "كوريا الجنوبية",
+   179→  },
+   180→  {
+   181→    name: "برايمر مثبت للمكياج - قاعدة مضيئة",
+   182→    description:
+   183→      "برايمر يوحد سطح البشرة ويصغر المسام ويمنحها إشراقة فورية. يثبت المكياج ويطيل ثباته حتى 12 ساعة. خفيف وغير دهني ومناسب للبشرة الدهنية والمختلطة.",
+   184→    price: 112,
+   185→    oldPrice: 140,
+   186→    image: "/images/prod-foundation.jpg",
+   187→    images: ["/images/prod-foundation.jpg", "/images/prod-moisturizer.jpg"],
+   188→    categorySlug: "makeup",
+   189→    rating: 4.7,
+   190→    reviewCount: 156,
+   191→    stock: 53,
+   192→    brand: "جلورية لوكس",
+   193→    prime: true,
+   194→    ingredients:
+   195→      "ماء، سيكلوبنتاسيلوكسان، غليسرين، نياسيناميد، حمض الهيالورونيك، خلاصة الصبار، فيتامين B3.",
+   196→    weight: "30 مل",
+   197→    origin: "فرنسا",
+   198→  },
+   199→  {
+   200→    name: "كونسيلر تغطية كاملة - مقاوم للتجاعيد",
+   201→    description:
+   202→      "كونسيلر كريمي بتغطية عالية يخفي الهالات السوداء والبقع والتصبغات فوراً. يحتوي على فيتامين C وحمض الهيالورونيك لرعاية المنطقة الحساسة حول العين. لا يتشقق ولا يتراكم بالخطوط الدقيقة.",
+   203→    price: 98,
+   204→    image: "/images/prod-foundation.jpg",
+   205→    images: ["/images/prod-foundation.jpg", "/images/prod-mascara.jpg"],
+   206→    categorySlug: "makeup",
+   207→    rating: 4.8,
+   208→    reviewCount: 203,
+   209→    stock: 67,
+   210→    brand: "جلورية",
+   211→    isNew: true,
+   212→    isChoice: true,
+   213→    prime: true,
+   214→    ingredients:
+   215→      "ماء، غليسرين، فيتامين C، حمض الهيالورونيك، خلاصة الخيار، فيتامين E، ببتيدات.",
+   216→    weight: "5 مل",
+   217→    origin: "كوريا الجنوبية",
+   218→  },
+   219→  {
+   220→    name: "محدد عيون مقاوم للماء - أسود فاحم",
+   221→    description:
+   222→      "محدد عيون بقلم جل بتركيبة مقاومة للماء والعرق. لون أسود مكثف وثبات حتى 14 ساعة. طرف رفيع لرسم خطوط دقيقة وسهولة التحكم. مثالي للخطوط العربية والقطط.",
+   223→    price: 65,
+   224→    image: "/images/prod-mascara.jpg",
+   225→    images: ["/images/prod-mascara.jpg"],
+   226→    categorySlug: "makeup",
+   227→    rating: 4.5,
+   228→    reviewCount: 89,
+   229→    stock: 95,
+   230→    brand: "جلورية",
+   231→    prime: true,
+   232→    ingredients: "شمع كرنوبا، شمع كانديليرا، زيت الخروع، أصباغ سوداء، فيتامين E.",
+   233→    weight: "0.5 جم",
+   234→    origin: "اليابان",
+   235→  },
+   236→  {
+   237→    name: "فرشاة مكياج احترافية - طقم 10 قطع",
+   238→    description:
+   239→      "طقم فرش مكياج احترافي من 10 قطع بشعيرات صناعية ناعمة فائقة الجودة. تشمل فرشاة الأساس والكونسيلر والظلال والبودرة وأحمر الخدود. مقابض خشبية فاخرة وحقيبة حمل أنيقة.",
+   240→    price: 145,
+   241→    oldPrice: 199,
+   242→    image: "/images/prod-eyeshadow.jpg",
+   243→    images: ["/images/prod-eyeshadow.jpg"],
+   244→    categorySlug: "makeup",
+   245→    rating: 4.9,
+   246→    reviewCount: 167,
+   247→    stock: 38,
+   248→    brand: "جلورية لوكس",
+   249→    isFeatured: true,
+   250→    prime: true,
+   251→    ingredients: "شعيرات صناعية ناعمة، مقابض خشب الزان، ألمنيوم مقاوم للصدأ.",
+   252→    weight: "طقم 10 قطع",
+   253→    origin: "الصين",
+   254→  },
+   255→  // ===== Lips =====
+   256→  {
+   257→    name: "أحمر شفاه ماط فاخر - ثبات 12 ساعة",
+   258→    description:
+   259→      "أحمر شفاه بتركيبة ماط مخملي يمنح لوناً مكثفاً بلمسة واحدة. ثبات يصل إلى 12 ساعة دون جفاف أو تشقق. غني بزبدة الشيا وزيت جوز الهند لترطيب الشفاه. متوفر بدرجات متعددة.",
+   260→    price: 69,
+   261→    oldPrice: 89,
+   262→    image: "/images/prod-lipstick.jpg",
+   263→    images: ["/images/prod-lipstick.jpg", "/images/prod-lipgloss.jpg"],
+   264→    categorySlug: "lips",
+   265→    rating: 4.8,
+   266→    reviewCount: 245,
+   267→    stock: 120,
+   268→    brand: "جلورية",
+   269→    shades: ["أحمر كلاسيكي", "وردي عاري", "نود بيج", "أحمر فونت", "بنفسجي داكن"],
+   270→    isFeatured: true,
+   271→    isBestseller: true,
+   272→    isChoice: true,
+   273→    prime: true,
+   274→    ingredients: "زبدة الشيا، زيت جوز الهند، شمع كرنوبا، فيتامين E، أصباغ طبيعية.",
+   275→    weight: "3.5 جم",
+   276→    origin: "فرنسا",
+   277→  },
+   278→  {
+   279→    name: "جلوس الشفاه اللامع - لمعان زجاجي",
+   280→    description:
+   281→      "جلوس شفاه بتركيبة لامعة غير لزجة تمنح شفاهكِ مظهراً ممتلئاً ولامعاً. خفيف الوزن ومريح على الشفاه، يحتوي على حمض الهيالورونيك للترطيب. يمكن استخدامه بمفرده أو فوق أحمر الشفاه.",
+   282→    price: 55,
+   283→    image: "/images/prod-lipgloss.jpg",
+   284→    images: ["/images/prod-lipgloss.jpg", "/images/prod-lipstick.jpg"],
+   285→    categorySlug: "lips",
+   286→    rating: 4.6,
+   287→    reviewCount: 178,
+   288→    stock: 84,
+   289→    brand: "جلورية",
+   290→    shades: ["شفاف لامع", "وردي لؤلؤي", "خوخي", "أحمر خفيف"],
+   291→    isNew: true,
+   292→    prime: true,
+   293→    ingredients: "زبدة الشيا، زيت الجوجوبا، حمض الهيالورونيك، خلاصة الفيتامين E.",
+   294→    weight: "6 مل",
+   295→    origin: "كوريا الجنوبية",
+   296→  },
+   297→  {
+   298→    name: "قلم تحديد الشفاه المقاوم للانزياح",
+   299→    description:
+   300→      "قلم تحديد شفاه كريمي يمنع انزياح أحمر الشفاه ويحدد ملامح الشفاه بدقة. تركيبة طويلة الثبات تتمدد بسهولة لملء الشفاه. متوفر بدرجات متناسقة مع أغلب ألوان أحمر الشفاه.",
+   301→    price: 42,
+   302→    image: "/images/prod-lipstick.jpg",
+   303→    images: ["/images/prod-lipstick.jpg"],
+   304→    categorySlug: "lips",
+   305→    rating: 4.5,
+   306→    reviewCount: 112,
+   307→    stock: 76,
+   308→    brand: "جلورية",
+   309→    shades: ["أحمر", "وردي", "نود", "بني"],
+   310→    prime: true,
+   311→    ingredients: "شمع كانديليرا، زبدة الكاكاو، فيتامين E، أصباغ.",
+   312→    weight: "1.2 جم",
+   313→    origin: "ألمانيا",
+   314→  },
+   315→  {
+   316→    name: "تينت الشفاه طويل الأمد - لون طبيعي",
+   317→    description:
+   318→      "تينت شفاه سائل يمنح لوناً طبيعياً يدوم حتى 8 ساعات. خفيف جداً وغير لزج، مثالي للإطلالة اليومية الطبيعية. يتفاعل مع درجة حموضة الشفاه لإظهار لون مخصص لكِ.",
+   319→    price: 48,
+   320→    image: "/images/prod-lipgloss.jpg",
+   321→    images: ["/images/prod-lipgloss.jpg", "/images/prod-lipstick.jpg"],
+   322→    categorySlug: "lips",
+   323→    rating: 4.4,
+   324→    reviewCount: 96,
+   325→    stock: 58,
+   326→    brand: "جلورية",
+   327→    shades: ["وردي طبيعي", "خوخي", "توتي", "مرجاني"],
+   328→    isNew: true,
+   329→    prime: true,
+   330→    ingredients: "ماء، غليسرين، خلاصة الفراولة، حمض الهيالورونيك، أصباغ طبيعية.",
+   331→    weight: "4 مل",
+   332→    origin: "كوريا الجنوبية",
+   333→  },
+   334→  {
+   335→    name: "بلسم الشفاه المرطب - نكهة الفراولة",
+   336→    description:
+   337→      "بلسم شفاه مرطب بزبدة الكاكاو وزبدة الشيا وزيت اللوز. يرطب الشفاه الجافة والمتشققة ويحميها من العوامل الخارجية. بلمسة لامعة خفيفة ونكهة فراولة لذيذة. مناسب للاستخدام اليومي.",
+   338→    price: 28,
+   339→    image: "/images/prod-lipgloss.jpg",
+   340→    images: ["/images/prod-lipgloss.jpg"],
+   341→    categorySlug: "lips",
+   342→    rating: 4.7,
+   343→    reviewCount: 145,
+   344→    stock: 150,
+   345→    brand: "جلورية",
+   346→    prime: true,
+   347→    ingredients: "زبدة الكاكاو، زبدة الشيا، زيت اللوز، شمع النحل، فيتامين E، نكهة فراولة.",
+   348→    weight: "4 جم",
+   349→    origin: "الإمارات",
+   350→  },
+   351→  // ===== Hair =====
+   352→  {
+   353→    name: "سيروم نمو الشعر بزيت الأرغان والبيوتين",
+   354→    description:
+   355→      "سيروم مركّز يغذي فروة الرأس ويحفز نمو الشعر ويقلل التساقط. يحتوي على زيت الأرغان المغربي والبيوتين والكافيين. يعزز كثافة الشعر ويمنحه قوة ولمعاناً. مناسب لجميع أنواع الشعر.",
+   356→    price: 135,
+   357→    oldPrice: 175,
+   358→    image: "/images/prod-hairserum.jpg",
+   359→    images: ["/images/prod-hairserum.jpg", "/images/prod-hairmask.jpg"],
+   360→    categorySlug: "hair",
+   361→    rating: 4.8,
+   362→    reviewCount: 234,
+   363→    stock: 62,
+   364→    brand: "جلورية لوكس",
+   365→    isFeatured: true,
+   366→    isBestseller: true,
+   367→    isChoice: true,
+   368→    prime: true,
+   369→    ingredients:
+   370→      "زيت الأرغان المغربي، بيوتين، كافيين، زيت إكليل الجبل، نياسيناميد، ببتيدات، فيتامين E.",
+   371→    weight: "60 مل",
+   372→    origin: "المغرب",
+   373→  },
+   374→  {
+   375→    name: "شامبو خالي من السلفات - للأشقر والمعالج",
+   376→    description:
+   377→      "شامبو لطيف خالٍ من السلفات والبارابين ينظف الشعر بلطف دون أن يجففه. مثالي للشعر المصبوغ والمعالج كيميائياً. يحافظ على لون الصبغة ويرطب الشعر بزيت الأركان والأرغان.",
+   378→    price: 78,
+   379→    image: "/images/prod-shampoo.jpg",
+   380→    images: ["/images/prod-shampoo.jpg"],
+   381→    categorySlug: "hair",
+   382→    rating: 4.6,
+   383→    reviewCount: 167,
+   384→    stock: 94,
+   385→    brand: "جلورية",
+   386→    prime: true,
+   387→    ingredients: "ماء، خلاصة الصبار، زيت الأرغان، بروتين القمح، بانثينول، فيتامين B5.",
+   388→    weight: "300 مل",
+   389→    origin: "فرنسا",
+   390→  },
+   391→  {
+   392→    name: "ماسك الشعر المغذي - ترميم عميق",
+   393→    description:
+   394→      "ماسك شعر غني بالكيراتين وزبدة الشيا لترميم الشعر التالف بعمق. يرطب ويغذي ويمنح الشعر نعومة ولمعاناً فائقاً. يستخدم مرة أو مرتين أسبوعياً للحصول على شعر صحي وقوي.",
+   395→    price: 95,
+   396→    oldPrice: 120,
+   397→    image: "/images/prod-hairmask.jpg",
+   398→    images: ["/images/prod-hairmask.jpg", "/images/prod-hairserum.jpg"],
+   399→    categorySlug: "hair",
+   400→    rating: 4.7,
+   401→    reviewCount: 189,
+   402→    stock: 71,
+   403→    brand: "جلورية لوكس",
+   404→    isBestseller: true,
+   405→    prime: true,
+   406→    ingredients: "كيراتين، زبدة الشيا، زيت جوز الهند، زيت الأرغان، بانثينول، فيتامين E.",
+   407→    weight: "250 مل",
+   408→    origin: "المغرب",
+   409→  },
+   410→  {
+   411→    name: "زيت الأرغان المغربي الأصلي - 100 مل",
+   412→    description:
+   413→      "زيت أرغان مغربي نقي 100% عضوي يغذي الشعر والبشرة والأظافر. غني بفيتامين E والأحماض الدهنية الأساسية. يرطب الشعر ويمنحه لمعاناً صحياً ويقاوم التقصف. متعدد الاستخدامات.",
+   414→    price: 115,
+   415→    image: "/images/prod-hairserum.jpg",
+   416→    images: ["/images/prod-hairserum.jpg"],
+   417→    categorySlug: "hair",
+   418→    rating: 4.9,
+   419→    reviewCount: 278,
+   420→    stock: 45,
+   421→    brand: "جلورية لوكس",
+   422→    isFeatured: true,
+   423→    isNew: true,
+   424→    isChoice: true,
+   425→    prime: true,
+   426→    ingredients: "100% زيت أرغان مغربي عضوي معصور على البارد.",
+   427→    weight: "100 مل",
+   428→    origin: "المغرب",
+   429→  },
+   430→  {
+   431→    name: "بلسم الشعر الحريري - فك التشابك",
+   432→    description:
+   433→      "بلسم شعر خفيف يفك التشابك ويرطب الشعر ويجعله حريرياً وسهل التسريح. خالٍ من السلفات والبارابين. مناسب للاستخدام اليومي لجميع أنواع الشعر. برائحة الأزهار الأنثوية.",
+   434→    price: 68,
+   435→    image: "/images/prod-shampoo.jpg",
+   436→    images: ["/images/prod-shampoo.jpg"],
+   437→    categorySlug: "hair",
+   438→    rating: 4.5,
+   439→    reviewCount: 124,
+   440→    stock: 88,
+   441→    brand: "جلورية",
+   442→    prime: true,
+   443→    ingredients: "ماء، زبدة الشيا، زيت الجوجوبا، بانثينول، خلاصة الورد، فيتامين B5.",
+   444→    weight: "300 مل",
+   445→    origin: "فرنسا",
+   446→  },
+   447→  // ===== Nails =====
+   448→  {
+   449→    name: "طلاء أظافر جل طويل الأمد - 7 أيام",
+   450→    description:
+   451→      "طلاء أظافر بتركيبة الجل التي تمنح لمعاناً زجاجياً وثباتاً يصل إلى 7 أيام دون تقشر. يجف بسرعة تحت ضوء LED. ألوان غنية ومشبعة بدرجات عصرية. خالٍ من الفورمالديهايد والتولوين.",
+   452→    price: 45,
+   453→    oldPrice: 60,
+   454→    image: "/images/prod-nailpolish.jpg",
+   455→    images: ["/images/prod-nailpolish.jpg"],
+   456→    categorySlug: "nails",
+   457→    rating: 4.7,
+   458→    reviewCount: 187,
+   459→    stock: 110,
+   460→    brand: "جلورية",
+   461→    shades: ["أحمر كلاسيكي", "وردي فاتح", "نود بيج", "أسود", "فرنسي أبيض", "ميتاليك ذهبي"],
+   462→    isFeatured: true,
+   463→    isBestseller: true,
+   464→    prime: true,
+   465→    ingredients: "راتنجات أكريليك، أصباغ معدنية، خالٍ من الفورمالديهايد والتولوين.",
+   466→    weight: "12 مل",
+   467→    origin: "كوريا الجنوبية",
+   468→  },
+   469→  {
+   470→    name: "طقم العناية بالأظافر الاحترافي - 12 قطعة",
+   471→    description:
+   472→      "طقم عناية بالأظافر من 12 قطعة من الستانلس المقاوم للصدأ. يشمل مقص الأظافر، المبرد، الملقط، دافع الجلد وغيرها. في حقيبة حمل أنيقة. مثالي للاستخدام المنزلي أو الاحترافي.",
+   473→    price: 89,
+   474→    image: "/images/prod-nailpolish.jpg",
+   475→    images: ["/images/prod-nailpolish.jpg"],
+   476→    categorySlug: "nails",
+   477→    rating: 4.6,
+   478→    reviewCount: 98,
+   479→    stock: 56,
+   480→    brand: "جلورية لوكس",
+   481→    prime: true,
+   482→    ingredients: "ستانلس مقاوم للصدأ، مقابض بلاستيك ABS.",
+   483→    weight: "طقم 12 قطعة",
+   484→    origin: "باكستان",
+   485→  },
+   486→  {
+   487→    name: "مزيل طلاء الأظافر اللطيف - بدون أسيتون",
+   488→    description:
+   489→      "مزيل طلاء أظافر لطيف خالٍ من الأسيتون، مُعزّز بزيت الجوجوبا وفيتامين E. يزيل طلاء الأظافر بسهولة دون أن يجفف الأظافر أو الجلد المحيط. برائحة منعشة ولطيفة.",
+   490→    price: 32,
+   491→    image: "/images/prod-nailpolish.jpg",
+   492→    images: ["/images/prod-nailpolish.jpg"],
+   493→    categorySlug: "nails",
+   494→    rating: 4.4,
+   495→    reviewCount: 67,
+   496→    stock: 130,
+   497→    brand: "جلورية",
+   498→    isNew: true,
+   499→    prime: true,
+   500→    ingredients: "إيثيل أسيتات، زيت الجوجوبا، زيت اللوز، فيتامين E، خلاصة اللافندر.",
+   501→    weight: "100 مل",
+   502→    origin: "الإمارات",
+   503→  },
+   504→  {
+   505→    name: "أظافر جاهزة للتركيب - فرنسي طبيعي",
+   506→    description:
+   507→      "طقم أظافر جاهزة للتركيب بتصميم الفرنسي الأنيق. 24 قطعة بأحجام متناسبة مع كل الأظافر. سهلة التركيب وتدوم حتى أسبوعين. تعطي مظهراً احترافياً في المنزل.",
+   508→    price: 52,
+   509→    oldPrice: 68,
+   510→    image: "/images/prod-nailpolish.jpg",
+   511→    images: ["/images/prod-nailpolish.jpg"],
+   512→    categorySlug: "nails",
+   513→    rating: 4.5,
+   514→    reviewCount: 134,
+   515→    stock: 78,
+   516→    brand: "جلورية",
+   517→    prime: true,
+   518→    ingredients: "راتنج ABS، غراء لاصق طبي.",
+   519→    weight: "24 قطعة",
+   520→    origin: "الصين",
+   521→  },
+   522→  // ===== Perfume =====
+   523→  {
+   524→    name: "عطر الورد الدمشقي الفاخر - 100 مل",
+   525→    description:
+   526→      "عطر شرقي زهري فاخر مستوحى من ورود دمشق الأصيلة. يفتح بنفحات الورد البلغاري والياسمين، ويتطور إلى قلب من العود والمسك. يدوم أكثر من 10 ساعات. تركيبة فاخرة بتركيز EDP.",
+   527→    price: 285,
+   528→    oldPrice: 360,
+   529→    image: "/images/prod-perfume1.jpg",
+   530→    images: ["/images/prod-perfume1.jpg"],
+   531→    categorySlug: "perfume",
+   532→    rating: 4.9,
+   533→    reviewCount: 198,
+   534→    stock: 34,
+   535→    brand: "جلورية لوكس",
+   536→    isFeatured: true,
+   537→    isBestseller: true,
+   538→    isChoice: true,
+   539→    prime: true,
+   540→    ingredients:
+   541→      "روائح عطرية: الورد البلغاري، الياسمين، العود الكمبودي، المسك الأبيض، العنبر، خشب الصندل.",
+   542→    weight: "100 مل",
+   543→    origin: "فرنسا",
+   544→  },
+   545→  {
+   546→    name: "عطر المسك الأبيض النقي - 90 مل",
+   547→    description:
+   548→      "عطر أبيض نقي بروائح المسك الأبيض الناعم واللوز والعنبر. عطر لطيف وأنيق يناسب الإطلالات اليومية والمناسبات. يدوم طويلاً على البشرة ويترك أثراً ساحراً. تركيز EDP فاخر.",
+   549→    price: 215,
+   550→    image: "/images/prod-perfume1.jpg",
+   551→    images: ["/images/prod-perfume1.jpg"],
+   552→    categorySlug: "perfume",
+   553→    rating: 4.8,
+   554→    reviewCount: 156,
+   555→    stock: 48,
+   556→    brand: "جلورية لوكس",
+   557→    isBestseller: true,
+   558→    prime: true,
+   559→    ingredients: "المسك الأبيض، اللوز، العنبر، الفانيليا، خشب الصندل، الياسمين.",
+   560→    weight: "90 مل",
+   561→    origin: "الإمارات",
+   562→  },
+   563→  {
+   564→    name: "عطر الياسمين الملكي - 100 مل",
+   565→    description:
+   566→      "عطر زهري ملكي بنفحات الياسمين الصنفوري والزهر البرتقالي وفانيليا البوربون. أنثوي وراقٍ، مثالي للسهرات والمناسبات الخاصة. يدوم حتى 12 ساعة. عبوة فاخرة بتغطية ذهبية.",
+   567→    price: 245,
+   568→    oldPrice: 290,
+   569→    image: "/images/prod-perfume1.jpg",
+   570→    images: ["/images/prod-perfume1.jpg"],
+   571→    categorySlug: "perfume",
+   572→    rating: 4.7,
+   573→    reviewCount: 112,
+   574→    stock: 29,
+   575→    brand: "جلورية لوكس",
+   576→    isNew: true,
+   577→    prime: true,
+   578→    ingredients: "الياسمين الصنفوري، الزهر البرتقالي، فانيليا البوربون، العنبر، المسك.",
+   579→    weight: "100 مل",
+   580→    origin: "فرنسا",
+   581→  },
+   582→  {
+   583→    name: "عطر العود الملكي الفاخر - 75 مل",
+   584→    description:
+   585→      "عطر عود ملكي فاخر بنفحات العود الكمبودي والصندل والورد التائفي. عطر شرقي غني ودافئ يدوم طويلاً ويناسب الأجواء الفخمة. تركيز EDP بجودة عالية. عبوة أنيقة بتصميم عربي تراثي.",
+   586→    price: 325,
+   587→    image: "/images/prod-perfume1.jpg",
+   588→    images: ["/images/prod-perfume1.jpg"],
+   589→    categorySlug: "perfume",
+   590→    rating: 4.9,
+   591→    reviewCount: 87,
+   592→    stock: 22,
+   593→    brand: "جلورية لوكس",
+   594→    isFeatured: true,
+   595→    isChoice: true,
+   596→    prime: true,
+   597→    ingredients: "العود الكمبودي، خشب الصندل، الورد التائفي، المسك، العنبر، الزعفران.",
+   598→    weight: "75 مل",
+   599→    origin: "الإمارات",
+   600→  },
+   601→  // ===== Skincare =====
+   602→  {
+   603→    name: "سيروم فيتامين C المركز - 20%",
+   604→    description:
+   605→      "سيروم بفيتامين C بتركيز 20% يوحّد لون البشرة ويفتح البقع الداكنة ويعزز إنتاج الكولاجين. يحتوي على حمض الفيروليك وفيتامين E لفعالية مضاعفة. يمنح البشرة إشراقة فورية ويقلل علامات التقدم في العمر.",
+   606→    price: 145,
+   607→    oldPrice: 195,
+   608→    image: "/images/prod-serum.jpg",
+   609→    images: ["/images/prod-serum.jpg", "/images/prod-moisturizer.jpg"],
+   610→    categorySlug: "skincare",
+   611→    rating: 4.8,
+   612→    reviewCount: 267,
+   613→    stock: 58,
+   614→    brand: "جلورية لوكس",
+   615→    isFeatured: true,
+   616→    isBestseller: true,
+   617→    isChoice: true,
+   618→    prime: true,
+   619→    ingredients:
+   620→      "ماء، فيتامين C (L-أسكوربيك أسيد 20%)، حمض الفيروليك، فيتامين E، حمض الهيالورونيك، غليسرين.",
+   621→    weight: "30 مل",
+   622→    origin: "كوريا الجنوبية",
+   623→  },
+   624→  {
+   625→    name: "كريم الترطيب اليومي مع حمض الهيالورونيك",
+   626→    description:
+   627→      "كريم ترطيب يومي خفيف بتركيبة حمض الهيالورونيك والسيراميد يرطب البشرة بعمق ويحافظ على رطوبتها لمدة 48 ساعة. غير دهني وسريع الامتصاص، مناسب لجميع أنواع البشرة. يحقق نضارة وإشراقاً.",
+   628→    price: 110,
+   629→    image: "/images/prod-moisturizer.jpg",
+   630→    images: ["/images/prod-moisturizer.jpg", "/images/prod-serum.jpg"],
+   631→    categorySlug: "skincare",
+   632→    rating: 4.7,
+   633→    reviewCount: 189,
+   634→    stock: 76,
+   635→    brand: "جلورية لوكس",
+   636→    isBestseller: true,
+   637→    prime: true,
+   638→    ingredients: "ماء، حمض الهيالورونيك، سيراميد، غليسرين، نياسيناميد، زبدة الشيا، فيتامين E.",
+   639→    weight: "50 مل",
+   640→    origin: "كوريا الجنوبية",
+   641→  },
+   642→  {
+   643→    name: "غسول الوجه اللطيف - للبشرة الحساسة",
+   644→    description:
+   645→      "غسول وجه لطيف خالٍ من الصابون والعطور ينظف البشرة بعمق دون أن يجففها. يحتوي على خلاصة الشاي الأخضر والصبار لتهدئة البشرة. مناسب للبشرة الحساسة والجافة. يستخدم صباحاً ومساءً.",
+   646→    price: 65,
+   647→    image: "/images/prod-serum.jpg",
+   648→    images: ["/images/prod-serum.jpg"],
+   649→    categorySlug: "skincare",
+   650→    rating: 4.6,
+   651→    reviewCount: 145,
+   652→    stock: 92,
+   653→    brand: "جلورية",
+   654→    prime: true,
+   655→    ingredients: "ماء، خلاصة الشاي الأخضر، خلاصة الصبار، غليسرين، حمض الأمينو، بانثينول.",
+   656→    weight: "150 مل",
+   657→    origin: "اليابان",
+   658→  },
+   659→  {
+   660→    name: "ماسك الطين المنقي للبشرة الدهنية",
+   661→    description:
+   662→      "ماسك طين كاولين وبنتونيت ينقي البشرة الدهنية والمختلطة بعمق. يمتص الزيوت الزائدة، يصغر المسام، وينظف الرؤوس السوداء. يمنح البشرة مظهراً صحياً ومتجدداً. يستخدم مرة أسبوعياً.",
+   663→    price: 78,
+   664→    oldPrice: 98,
+   665→    image: "/images/prod-moisturizer.jpg",
+   666→    images: ["/images/prod-moisturizer.jpg"],
+   667→    categorySlug: "skincare",
+   668→    rating: 4.5,
+   669→    reviewCount: 112,
+   670→    stock: 64,
+   671→    brand: "جلورية",
+   672→    isNew: true,
+   673→    prime: true,
+   674→    ingredients: "طين كاولين، طين بنتونيت، خلاصة الشاي الأخضر، زيت شجرة الشاي، حمض الساليسيليك.",
+   675→    weight: "100 مل",
+   676→    origin: "المغرب",
+   677→  },
+   678→  {
+   679→    name: "واقي الشمس الخفيف SPF 50+ - بدون أثر أبيض",
+   680→    description:
+   681→      "واقي شمس خفيف الوزن بعامل حماية SPF 50+ يحمي البشرة من الأشعة فوق البنفسجية UVA وUVB. تركيبة غير دهنية لا تترك أثراً أبيض وتصلح كقاعدة للمكياج. مقاوم للعرق والماء. مناسب للبشرة الحساسة.",
+   682→    price: 125,
+   683→    image: "/images/prod-moisturizer.jpg",
+   684→    images: ["/images/prod-moisturizer.jpg"],
+   685→    categorySlug: "skincare",
+   686→    rating: 4.8,
+   687→    reviewCount: 203,
+   688→    stock: 49,
+   689→    brand: "جلورية لوكس",
+   690→    isFeatured: true,
+   691→    isNew: true,
+   692→    isChoice: true,
+   693→    prime: true,
+   694→    ingredients:
+   695→      "ثاني أكسيد التيتانيوم، أكسيد الزنك، نياسيناميد، حمض الهيالورونيك، خلاصة الشاي الأخضر.",
+   696→    weight: "50 مل",
+   697→    origin: "كوريا الجنوبية",
+   698→  },
+   699→  {
+   700→    name: "تونر موازن للبشرة - بالورد الطبيعي",
+   701→    description:
+   702→      "تونر بماء الورد الطبيعي يوازن درجة حموضة البشرة ويصغر المسام ويحضّر البشرة لاستقبال السيروم والكريم. يرطب وينعش البشرة بعمق. خالٍ من الكحول والعطور الصناعية. للاستخدام اليومي.",
+   703→    price: 72,
+   704→    image: "/images/prod-serum.jpg",
+   705→    images: ["/images/prod-serum.jpg"],
+   706→    categorySlug: "skincare",
+   707→    rating: 4.6,
+   708→    reviewCount: 134,
+   709→    stock: 81,
+   710→    brand: "جلورية",
+   711→    prime: true,
+   712→    ingredients: "ماء الورد الطبيعي، غليسرين، حمض الهيالورونيك، خلاصة البابونج، فيتامين B5.",
+   713→    weight: "200 مل",
+   714→    origin: "المغرب",
+   715→  },
+   716→];
+   717→
+   718→// ===== Reviews generation =====
+   719→
+   720→const REVIEW_AUTHORS = [
+   721→  "سارة العتيبي",
+   722→  "نورة المالكي",
+   723→  "ريم الشمري",
+   724→  "أمل القحطاني",
+   725→  "فاطمة الزهراني",
+   726→  "هند الدوسري",
+   727→  "لمى العنزي",
+   728→  "جود الحربي",
+   729→  "مها الغامدي",
+   730→  "روان السبيعي",
+   731→  "دانة المطيري",
+   732→  "شهد القرني",
+   733→];
+   734→
+   735→const REVIEW_TEMPLATES: Array<{
+   736→  rating: number;
+   737→  title: string;
+   738→  body: string;
+   739→}> = [
+   740→  {
+   741→    rating: 5,
+   742→    title: "منتج رائع ويفوق التوقعات!",
+   743→    body: "استخدمته منذ أسبوعين والنتيجة مذهلة. الجودة ممتازة والتغليف فاخر. أنصح به بشدة لكل من تبحث عن نتيجة حقيقية. سأعيد الطلب بالتأكيد.",
+   744→  },
+   745→  {
+   746→    rating: 5,
+   747→    title: "أفضل منتج جربته في هذه الفئة",
+   748→    body: "جربت منتجات كثيرة لكن هذا отличается. الملمس خفيف، يمتص بسرعة، وترك إحساساً رائعاً. التوصيل كان سريعاً والتغليف أنيق جداً. شكراً جلورية.",
+   749→  },
+   750→  {
+   751→    rating: 5,
+   752→    title: "نتيجة مذهلة من أول استخدام",
+   753→    body: "لم أتوقع نتيجة بهذه السرعة! المنتج خفيف وغير دهني وترك بشرتي نضرة ومشرقة. الرائحة لطيفة جداً. أصبح من أساسيات روتيني اليومي.",
+   754→  },
+   755→  {
+   756→    rating: 4,
+   757→    title: "منتج جيد لكن السعر مرتفع قليلاً",
+   758→    body: "الجودة ممتازة والنتيجة مرضية لكن السعر يعتبر مرتفع مقارنة بمنتجات مشابهة. ومع ذلك الجودة تبرر السعر. أنصح به لمن تبحث عن منتج أصلي وفعّال.",
+   759→  },
+   760→  {
+   761→    rating: 5,
+   762→    title: "اختيار جلورية يستحق التجربة",
+   763→    body: "كنت مترددة في البداية لكن المنتج فاجأني. التركيبة غنية والمفعول واضح. التغليف أنيق ووصل بحالة ممتازة. تجربة تسوق مريحة من البداية للنهاية.",
+   764→  },
+   765→  {
+   766→    rating: 4,
+   767→    title: "جودة عالية وأثر واضح",
+   768→    body: "المنتج فعّال وأحسست بالفرق خلال أيام. الملمس لطيف والرائحة راقية. الوحيد أن العبوة كانت أصغر قليلاً مما توقعت لكنها كافية للاستخدام المنتظم.",
+   769→  },
+   770→  {
+   771→    rating: 5,
+   772→    title: "أصبح المفضل لدي!",
+   773→    body: "منتج لا أستغني عنه الآن. لاحظت فرقاً واضحاً من أول أسبوع. التركيبة لطيفة على البشرة ولم تسبب أي حساسية. أنصح به كل صديقاتي.",
+   774→  },
+   775→  {
+   776→    rating: 3,
+   777→    title: "جيد لكن يحتاج وقت لنرى النتيجة",
+   778→    body: "المنتج جيد عموماً لكن النتيجة لم تكن فورية كما توقعت. بعد شهر من الاستخدام المنتظم بدأت ألاحظ تحسناً تدريجياً. السعر معقول والجودة مقبولة.",
+   779→  },
+   780→  {
+   781→    rating: 5,
+   782→    title: "تجربة رائعة وخدمة ممتازة",
+   783→    body: "المنتج وصل بسرعة وكان مغلفاً بعناية. الجودة ممتازة والنتيجة فاقت توقعاتي. خدمة العملاء كانت متجاوبة عند استفساري. شكراً على الاحترافية.",
+   784→  },
+   785→  {
+   786→    rating: 4,
+   787→    title: "منتج فعّال وأنصح به",
+   788→    body: "أعجبني كثيراً. الملمس ناعم، الرائحة هادئة، والنتيجة جيدة. فقط أتمنى لو كانت هناك عبوة أكبر بسعر أفضل. عموماً تجربة مرضية وأنصح بالتجربة.",
+   789→  },
+   790→];
+   791→
+   792→const REVIEW_DAYS = [2, 5, 8, 12, 16, 20, 25, 32, 40, 50, 65, 80, 95, 110, 130, 160];
+   793→
+   794→export function generateReviews(productIndex: number, count: number): SeedReview[] {
+   795→  // Deterministic pseudo-random based on product index so seed is reproducible
+   796→  const reviews: SeedReview[] = [];
+   797→  let seed = productIndex * 17 + 3;
+   798→  const rand = () => {
+   799→    seed = (seed * 9301 + 49297) % 233280;
+   800→    return seed / 233280;
+   801→  };
+   802→  for (let i = 0; i < count; i++) {
+   803→    const tpl = REVIEW_TEMPLATES[Math.floor(rand() * REVIEW_TEMPLATES.length)];
+   804→    const author = REVIEW_AUTHORS[Math.floor(rand() * REVIEW_AUTHORS.length)];
+   805→    const daysAgo = REVIEW_DAYS[Math.floor(rand() * REVIEW_DAYS.length)];
+   806→    const helpful = Math.floor(rand() * 35);
+   807→    const verified = rand() > 0.1;
+   808→    reviews.push({
+   809→      author,
+   810→      rating: tpl.rating,
+   811→      title: tpl.title,
+   812→      body: tpl.body,
+   813→      helpful,
+   814→      verified,
+   815→      daysAgo,
+   816→    });
+   817→  }
+   818→  // Sort newest first (smaller daysAgo first)
+   819→  return reviews.sort((a, b) => a.daysAgo - b.daysAgo);
+   820→}
+   821→
+   822→// Number of reviews per product (varies between 3-8)
+   823→export function reviewCountForProduct(productIndex: number): number {
+   824→  return 3 + (productIndex % 6); // 3..8
+   825→}
+   826→

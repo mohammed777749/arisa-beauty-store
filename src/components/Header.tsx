@@ -17,7 +17,6 @@ import {
   ListChecks,
   Truck,
   ChevronLeft,
-  Gift,
   Zap,
   HelpCircle,
   Phone,
@@ -56,7 +55,7 @@ const NAV_LINKS = [
   { label: "عروض اليوم", href: "?view=shop&sort=price-asc", icon: Zap },
   { label: "الأكثر مبيعاً", href: "?view=shop&sort=bestselling", icon: Crown },
   { label: "جديدنا", href: "?view=shop&sort=newest", icon: Sparkles },
-  { label: "بطاقات الهدايا", href: "?view=home", icon: Gift },
+  { label: "خدماتنا", href: "?view=services", icon: Heart },
   { label: "تتبع طلبك", href: "?view=orders", icon: Truck },
   { label: "تواصلي معنا", href: "?view=home", icon: HelpCircle },
 ];
@@ -454,6 +453,37 @@ export default function Header() {
                   </span>
                   <ChevronLeft className="size-4 text-muted-foreground" />
                 </Link>
+                <div className="my-2 h-px bg-border" />
+                <Link
+                  href="?view=services"
+                  onClick={() => setMegaNavOpen(false)}
+                  className="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-bold hover:bg-muted"
+                >
+                  <span className="flex items-center gap-2">
+                    <Heart className="size-4 text-rose-500" />
+                    خدماتنا التجميلية
+                  </span>
+                  <ChevronLeft className="size-4 text-muted-foreground" />
+                </Link>
+                {[
+                  { slug: "bridal", name: "تجهيز العرايس" },
+                  { slug: "lips", name: "تكبير الشفاة" },
+                  { slug: "skincare", name: "العناية بالبشرة" },
+                  { slug: "makeup", name: "المكياج الاحترافي" },
+                  { slug: "laser", name: "إزالة الشعر بالليزر" },
+                  { slug: "spa", name: "حمام مغربي ومساج" },
+                ].map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`?view=services&category=${c.slug}`}
+                    onClick={() => setMegaNavOpen(false)}
+                    className="flex items-center justify-between rounded-lg px-4 py-2.5 pr-8 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    {c.name}
+                    <ChevronLeft className="size-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                <div className="my-2 h-px bg-border" />
                 <Link
                   href="?view=orders"
                   onClick={() => setMegaNavOpen(false)}

@@ -270,3 +270,37 @@ Customers can now register and log in to the store (`?view=auth`). The header ac
 
 ### Stage Summary
 The dev server is now managed by PM2 with: auto-restart on crash (verified by kill test), 500MB memory limit restart, fork mode compatible with next dev, port cleanup on restart (dev-start.sh wrapper), background HTTP watchdog every 5 minutes, PM2 state saved for resurrection. Production config (standalone + server-guard.js with uncaughtException/unhandledRejection handlers) ready to enable after `bun run build`. Lint passes cleanly.
+
+---
+
+## Task ID: 10
+**Agent name:** Beauty Services Booking System (Z.ai Code main agent, resumed by user)
+**Task description:** Add beauty services booking system — the store now sells products AND offers beauty services (bridal prep, lip fillers, skincare, makeup, hair, nails, laser, spa) with appointment booking.
+
+### Work Log
+- Added `Service` and `ServiceBooking` models to `prisma/schema.prisma`. Ran `db:generate` + `db:push`.
+- Added `services` array (18 services) + `serviceCategories` array (8 categories) to `src/lib/seed-data.ts` with real Arabic names, descriptions, prices, durations, whatIncluded lists, ratings. Updated `prisma/seed.ts` + `/api/seed` to seed services (idempotent).
+- Ran seed: 6 categories, 32 products, 172 reviews, **18 services** inserted.
+- API routes: `GET/POST /api/services`, `GET/PUT/DELETE /api/services/[id]`, `GET /api/services/categories`, `GET/POST/PATCH /api/bookings`.
+- Views created: `ServicesView.tsx` (listing with category filters), `ServiceView.tsx` (detail with what's included + book button), `BookingView.tsx` (booking form: name/phone/email/date/time/notes + summary), `BookingSuccessView.tsx`, `MyBookingsView.tsx`.
+- `ServiceCard.tsx` reusable card with duration badge + "احجزي الآن".
+- HomeView: added "خدماتنا التجميلية" section showing 6 featured services.
+- AdminView: added "الخدمات" + "الحجوزات" tabs. Created `AdminServices.tsx` (CRUD with ImageInput) + `AdminBookings.tsx` (table + status management).
+- AdminDashboard + `/api/admin/stats`: added totalServices, totalBookings, pendingBookings + recent bookings table.
+- Header: added "خدماتنا" nav link + mega menu services section. Footer: added services links.
+- page.tsx: added services, service, booking, booking-success, my-bookings to KNOWN_VIEWS.
+
+### Bug fix
+- `AdminServices.tsx` had `react-hooks/set-state-in-effect` lint error (useEffect setting form values on open). Fixed by using `key={editing?.id ?? "new"}` on ServiceForm to force remount + initial useState from props — removed the useEffect entirely.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Seed: 18 services across 8 categories (bridal, lips, skincare, makeup, hair, nails, laser, spa).
+- All routes 200: services, service, booking, my-bookings.
+- Booking API tested: POST created booking (id, status=pending, totalPrice=400), GET by phone returns it.
+- Admin stats: totalServices=18, totalBookings=1, pendingBookings=1.
+- Home page shows services section with "احجزي الآن" buttons.
+- dev.log clean.
+
+### Stage Summary
+The store is now a dual-purpose platform: e-commerce for products + booking system for beauty services. 18 services seeded across 8 categories (تجهيز العرايس، خدمات الشفاة، العناية بالبشرة، المكياج الاحترافي، خدمات الشعر، خدمات الأظافر، إزالة الشعر، سبا). Customers browse services → view details → book appointment (date/time) → get confirmation. Admin can manage services (CRUD) and bookings (status: pending→confirmed→completed/cancelled). Dashboard shows services/bookings KPIs. All in Arabic RTL, rose/gold theme. Lint passes cleanly.

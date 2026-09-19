@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import {
   categories,
   products,
+  services,
   generateReviews,
   reviewCountForProduct,
 } from "@/lib/seed-data";
@@ -19,6 +20,8 @@ function daysAgoDate(days: number): Date {
 
 export async function GET() {
   try {
+    await db.serviceBooking.deleteMany();
+    await db.service.deleteMany();
     await db.review.deleteMany();
     await db.orderItem.deleteMany();
     await db.order.deleteMany();
@@ -90,12 +93,35 @@ export async function GET() {
       }
     }
 
+    // Insert services
+    for (const s of services) {
+      await db.service.create({
+        data: {
+          name: s.name,
+          description: s.description,
+          price: s.price,
+          oldPrice: s.oldPrice ?? null,
+          duration: s.duration,
+          image: s.image,
+          category: s.category,
+          icon: s.icon,
+          isFeatured: s.isFeatured ?? false,
+          isPopular: s.isPopular ?? false,
+          isActive: true,
+          rating: s.rating,
+          reviewCount: s.reviewCount,
+          whatIncluded: JSON.stringify(s.whatIncluded),
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Seeded ${categories.length} categories, ${products.length} products, and ${reviewTotal} reviews`,
+      message: `Seeded ${categories.length} categories, ${products.length} products, ${reviewTotal} reviews, and ${services.length} services`,
       categories: categories.length,
       products: products.length,
       reviews: reviewTotal,
+      services: services.length,
     });
   } catch (error) {
     console.error("Seed API error:", error);

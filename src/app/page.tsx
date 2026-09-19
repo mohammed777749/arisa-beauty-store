@@ -15,6 +15,11 @@ import OrdersView from "@/components/views/OrdersView";
 import OrderDetailView from "@/components/views/OrderDetailView";
 import WishlistView from "@/components/views/WishlistView";
 import OrderSuccessView from "@/components/views/OrderSuccessView";
+import ServicesView from "@/components/views/ServicesView";
+import ServiceView from "@/components/views/ServiceView";
+import BookingView from "@/components/views/BookingView";
+import BookingSuccessView from "@/components/views/BookingSuccessView";
+import MyBookingsView from "@/components/views/MyBookingsView";
 import AdminView from "@/components/views/AdminView";
 import AuthView from "@/components/views/AuthView";
 
@@ -29,6 +34,11 @@ const KNOWN_VIEWS = [
   "order-detail",
   "wishlist",
   "order-success",
+  "services",
+  "service",
+  "booking",
+  "booking-success",
+  "my-bookings",
   "admin",
   "auth",
 ];
@@ -65,6 +75,11 @@ function PageInner() {
         {view === "order-detail" && <OrderDetailView />}
         {view === "wishlist" && <WishlistView />}
         {view === "order-success" && <OrderSuccessView />}
+        {view === "services" && <ServicesView />}
+        {view === "service" && <ServiceView />}
+        {view === "booking" && <BookingView />}
+        {view === "booking-success" && <BookingSuccessView />}
+        {view === "my-bookings" && <MyBookingsView />}
         {view === "auth" && <AuthView />}
         {!KNOWN_VIEWS.includes(view) && <HomeView />}
       </main>

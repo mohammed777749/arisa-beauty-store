@@ -39,6 +39,17 @@ const columns = [
     ],
   },
   {
+    title: "خدماتنا التجميلية",
+    links: [
+      { label: "تجهيز العرايس", href: "?view=services&category=bridal" },
+      { label: "تكبير الشفاة", href: "?view=services&category=lips" },
+      { label: "العناية بالبشرة", href: "?view=services&category=skincare" },
+      { label: "المكياج الاحترافي", href: "?view=services&category=makeup" },
+      { label: "إزالة الشعر بالليزر", href: "?view=services&category=laser" },
+      { label: "حمام مغربي ومساج", href: "?view=services&category=spa" },
+    ],
+  },
+  {
     title: "خدمة العملاء",
     links: [
       { label: "تواصلي معنا", href: "?view=home" },
@@ -87,7 +98,7 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="container mx-auto max-w-7xl px-4 py-12">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
           {/* Brand + newsletter */}
           <div className="col-span-2 lg:col-span-2">
             <Link href="?view=home" className="flex items-center gap-2">

@@ -21,8 +21,9 @@ import SectionHeader from "@/components/SectionHeader";
 import LightningDeals from "@/components/LightningDeals";
 import RelatedCarousel from "@/components/RelatedCarousel";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import ServiceCard from "@/components/ServiceCard";
 import { Button } from "@/components/ui/button";
-import type { CategoryWithCount, Product } from "@/lib/types";
+import type { CategoryWithCount, Product, Service } from "@/lib/types";
 
 export default function HomeView() {
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
@@ -31,6 +32,7 @@ export default function HomeView() {
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [deals, setDeals] = useState<Product[]>([]);
   const [choice, setChoice] = useState<Product[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function HomeView() {
     (async () => {
       setLoading(true);
       try {
-        const [catRes, featRes, bestRes, newRes, dealRes, choiceRes] =
+        const [catRes, featRes, bestRes, newRes, dealRes, choiceRes, svcRes] =
           await Promise.all([
             fetch("/api/categories", { cache: "no-store" }),
             fetch("/api/products?featured=true&limit=8", { cache: "no-store" }),
@@ -46,14 +48,16 @@ export default function HomeView() {
             fetch("/api/products?new=true&limit=8", { cache: "no-store" }),
             fetch("/api/products?sort=price-asc&limit=10", { cache: "no-store" }),
             fetch("/api/products?isChoice=true&limit=8", { cache: "no-store" }),
+            fetch("/api/services?featured=true&limit=6", { cache: "no-store" }),
           ]);
-        const [cats, f, b, n, d, c] = await Promise.all([
+        const [cats, f, b, n, d, c, svc] = await Promise.all([
           catRes.json(),
           featRes.json(),
           bestRes.json(),
           newRes.json(),
           dealRes.json(),
           choiceRes.json(),
+          svcRes.json(),
         ]);
         if (!active) return;
         const arr = (x: Product[] | { products?: Product[] }) =>
@@ -68,6 +72,7 @@ export default function HomeView() {
         );
         setDeals(dealList.slice(0, 10));
         setChoice(arr(c));
+        setServices(Array.isArray(svc) ? svc : []);
       } catch (e) {
         console.error("Home fetch error:", e);
       } finally {
@@ -107,6 +112,38 @@ export default function HomeView() {
               ))}
         </div>
       </section>
+
+      {/* Services section */}
+      {services.length > 0 && (
+        <section className="bg-rose-gradient py-10">
+          <div className="container mx-auto max-w-7xl px-4">
+            <SectionHeader
+              eyebrow="مركز التجميل"
+              title="خدماتنا التجميلية"
+              subtitle="تجربة عناية فاخرة على أيدي خبيرات معتمدات — من تجهيز العرايس إلى العناية بالبشرة"
+              viewAllHref="?view=services"
+            />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+              {services.slice(0, 6).map((svc, i) => (
+                <ServiceCard key={svc.id} service={svc} index={i} />
+              ))}
+            </div>
+            <div className="mt-6 flex justify-center">
+              <Button
+                asChild
+                size="lg"
+                className="bg-primary-gradient text-white shadow-rose"
+              >
+                <Link href="?view=services" className="flex items-center gap-2">
+                  <Sparkles className="size-4" />
+                  عرض كل الخدمات
+                  <ArrowLeft className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Choice (Amazon's Choice) */}
       {choice.length > 0 && (
