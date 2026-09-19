@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Middleware للتحقق التلقائي من تهيئة قاعدة البيانات.
+ * Proxy (was "middleware" in Next.js 15) — للتحقق التلقائي من تهيئة قاعدة البيانات.
  *
  * عند أول زيارة للموقع (أو بعد نشر جديد بقاعدة فارغة)، يستدعي /api/seed
  * تلقائياً لتهيئة البيانات الأولية. بعد ذلك لا يفعل شيئاً (الـ seed route
  * نفسه يتحقق من فراغ القاعدة ويتخطى التهيئة إذا كانت البيانات موجودة).
  *
- * لتجنب إبطاء كل طلب، نستخدم متغير بيئة محلي (في الذاكرة) كعلامة أن
- * التحقق تم في هذه الدالة. على Vercel، كل دالة serverless لها ذاكرتها
- * الخاصة، لكن هذا يقلل الفحوصات المتكررة في نفس النسخة.
+ * Next.js 16: تم تغيير اسم "middleware" إلى "proxy" — نفس الوظيفة.
  */
 let checkedInThisInstance = false;
 
-export async function middleware(_request: NextRequest) {
+export async function proxy(_request: NextRequest) {
   // تخطي المسارات غير HTML (API، ملفات ثابتة، صور)
   const url = _request.nextUrl;
   if (
