@@ -494,3 +494,54 @@ Project is now Vercel-ready: removed standalone output, added PostgreSQL schema 
 
 ### Stage Summary
 Database is now fully automatic on Vercel. The user only needs to: (1) create a PostgreSQL DB on Vercel/Neon, (2) set DATABASE_URL env var, (3) deploy. During build: postinstall auto-detects provider + generates Prisma client, vercel-build pushes schema to DB + seeds initial data. During runtime: middleware auto-seeds on first visit if DB is empty. Seed API is idempotent (safe to re-run). All pushed to GitHub. Lint passes cleanly.
+
+---
+
+## Task ID: 17
+**Agent name:** Vercel Seed Fix + SEO Enhancement (Z.ai Code main agent)
+**Task description:** Fix the ERR_MODULE_NOT_FOUND error during Vercel build (prisma/seed.ts importing from src/lib/db) and comprehensively improve SEO.
+
+### Work Log
+**إصلاح خطأ البناء على Vercel:**
+- Root cause: `prisma/seed.ts` used `import { db } from "../src/lib/db"` which fails in ESM mode on Vercel (no file extension + path alias resolution issue).
+- Rewrote `prisma/seed.ts` to be **fully standalone** — no imports from `src/`. All seed data (categories, products, services, reviews generator) embedded directly. Creates its own `PrismaClient` instance.
+- Updated `scripts/auto-db.mjs`: now tries 3 methods in order (npx tsx → bun → node --experimental-strip-types) with 90s timeout each. Falls back gracefully.
+- Created `src/lib/seed-data.cjs` as CommonJS fallback.
+- Tested locally: seed runs successfully (6 categories, 14 products, 73 reviews, 11 services).
+
+**تحسينات السيو (SEO):**
+- **metadata في `src/app/layout.tsx`**:
+  - `title` with template (`%s | أريسا`)
+  - `description` موسّع (يتضمن كل الخدمات: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا)
+  - ١٨ كلمة مفتاحية
+  - `robots` directives (index, follow, googleBot with max-image-preview: large)
+  - `alternates` canonical + languages ar-SA
+  - `metadataBase` للروابط المطلقة
+  - `category: shopping`
+- **Open Graph**: title, description, url, siteName, type=website, locale=ar_SA, 2 images (hero + logo with dimensions + alt)
+- **Twitter Cards**: summary_large_image with title, description, image
+- **manifest.webmanifest**: PWA ready (name, short_name, lang=ar, dir=rtl, theme_color #e11d48, icons 192/512, display=standalone)
+- **`src/app/sitemap.ts`**: dynamic sitemap.xml with 6 pages, priorities, changeFreq
+- **`src/app/robots.ts`**: dynamic robots.txt — allows all, disallows /api/seed + /?view=admin + /?view=checkout, references sitemap
+- **`src/lib/seo.ts`**: JSON-LD structured data
+  - `BeautySalon` schema: name, address, geo, openingHours, makesOffer (5 services with prices)
+  - `WebSite` schema: SearchAction
+  - `Store` schema: paymentAccepted, currenciesAccepted
+- **JSON-LD scripts in `<head>`**: 3 scripts injected (organization + website + store)
+- `theme-color: #e11d48`, `msapplication-TileColor`
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- `bun run prisma/seed.ts` → ✅ runs successfully locally (standalone, no src/ imports).
+- HTTP 200 on home page.
+- SEO meta tags verified via Agent Browser:
+  - title: "أريسا | صالون التجميل ومتجر المستحضرات الفاخرة" ✅
+  - description: full Arabic description ✅
+  - og:title + og:image ✅
+  - canonical URL ✅
+  - manifest link ✅
+  - 3 JSON-LD scripts ✅
+- Pushed to GitHub (commit 748254f).
+
+### Stage Summary
+Fixed the Vercel build error (seed script was importing from src/ which fails in ESM) by making seed.ts fully standalone. Comprehensively improved SEO: rich metadata (title template, 18 keywords, expanded description), full Open Graph + Twitter Cards, PWA manifest, dynamic sitemap.xml + robots.txt, JSON-LD structured data (BeautySalon + WebSite + Store schemas with offers/prices/hours). All verified working. Pushed to GitHub.
