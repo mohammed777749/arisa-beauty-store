@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | أريسا",
   },
   description:
-    "أريسا — وجهتكِ الأولى للتجميل الفاخر في السعودية. مكياج، عناية بالبشرة، عطور، شعر، أظافر، شفاه، بالإضافة إلى خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا. شحن سريع ودفع عند الاستلام.",
+    "أريسا — وجهتكِ الأولى للتجميل الفاخر في السعودية. مكياج، عناية بالبشرة، عطور، شعر، أظافر، شفاه، بالإضافة إلى خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا. شحن سريع ودفع عند الاستلام. 🌹",
   keywords: [
     "أريسا",
     "تجميل",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "/",
+    canonical: siteUrl,
     languages: {
-      "ar-SA": "/",
+      "ar-SA": siteUrl,
     },
   },
   icons: {
@@ -72,23 +72,32 @@ export const metadata: Metadata = {
   openGraph: {
     title: "أريسا | صالون التجميل ومتجر المستحضرات الفاخرة",
     description:
-      "وجهتكِ الأولى للتجميل الفاخر في السعودية. منتجات أصلية + خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا. شحن سريع ودفع عند الاستلام.",
+      "وجهتكِ الأولى للتجميل الفاخر في السعودية 🌹 منتجات أصلية + خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا. شحن سريع ودفع عند الاستلام. اطلبي الآن!",
     url: siteUrl,
     siteName: "أريسا",
     type: "website",
     locale: "ar_SA",
     images: [
       {
-        url: "/images/hero.jpg",
-        width: 1344,
-        height: 768,
-        alt: "أريسا - صالون التجميل والمستحضرات الفاخرة",
+        url: `${siteUrl}/images/og-banner.jpg`,
+        width: 1152,
+        height: 864,
+        alt: "أريسا - صالون التجميل ومتجر المستحضرات الفاخرة",
+        type: "image/jpeg",
       },
       {
-        url: "/images/logo.png",
+        url: `${siteUrl}/images/hero.jpg`,
+        width: 1344,
+        height: 768,
+        alt: "أريسا - منتجات التجميل الفاخرة",
+        type: "image/jpeg",
+      },
+      {
+        url: `${siteUrl}/images/logo.png`,
         width: 449,
         height: 450,
         alt: "شعار أريسا",
+        type: "image/png",
       },
     ],
   },
@@ -96,13 +105,22 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "أريسا | صالون التجميل ومتجر المستحضرات الفاخرة",
     description:
-      "منتجات تجميل أصلية + خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي. شحن سريع ودفع عند الاستلام.",
-    images: ["/images/hero.jpg"],
+      "منتجات تجميل أصلية + خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي. شحن سريع ودفع عند الاستلام. 🌹",
+    images: [`${siteUrl}/images/og-banner.jpg`],
   },
   category: "shopping",
   other: {
     "theme-color": "#e11d48",
     "msapplication-TileColor": "#e11d48",
+    // وسوم إضافية يفهمها واتساب وتليجرام
+    "og:image:width": "1152",
+    "og:image:height": "864",
+    "og:image:type": "image/jpeg",
+    "og:site_name": "أريسا",
+    "og:locale": "ar_SA",
+    "og:url": siteUrl,
+    "og:type": "website",
+    "twitter:image:alt": "أريسا - صالون التجميل والمستحضرات الفاخرة",
   },
 };
 
@@ -114,6 +132,37 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
+        {/* ===== وسوم meta إضافية لمشاركة الواتساب والسوشيال ميديا ===== */}
+        <meta name="apple-mobile-web-app-title" content="أريسا" />
+        <meta name="application-name" content="أريسا" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-TileColor" content="#e11d48" />
+        <meta name="theme-color" content="#e11d48" />
+
+        {/* وسوم Open Graph مباشرة (لواتساب وتليجرام) */}
+        <meta property="og:site_name" content="أريسا" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="ar_SA" />
+        <meta property="og:title" content="أريسا | صالون التجميل ومتجر المستحضرات الفاخرة" />
+        <meta property="og:description" content="وجهتكِ الأولى للتجميل الفاخر في السعودية 🌹 منتجات أصلية + خدمات تجميل احترافية: تجهيز عرايس، تكبير شفايف، فيشيز ذهبي، ليزر، سبا. شحن سريع ودفع عند الاستلام." />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:image" content={`${siteUrl}/images/og-banner.jpg`} />
+        <meta property="og:image:secure_url" content={`${siteUrl}/images/og-banner.jpg`} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1152" />
+        <meta property="og:image:height" content="864" />
+        <meta property="og:image:alt" content="أريسا - صالون التجميل والمستحضرات الفاخرة" />
+
+        {/* وسوم Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="أريسا | صالون التجميل ومتجر المستحضرات الفاخرة" />
+        <meta name="twitter:description" content="منتجات تجميل أصلية + خدمات تجميل احترافية. شحن سريع ودفع عند الاستلام. 🌹" />
+        <meta name="twitter:image" content={`${siteUrl}/images/og-banner.jpg`} />
+
         {/* JSON-LD Structured Data for SEO */}
         <script
           type="application/ld+json"
