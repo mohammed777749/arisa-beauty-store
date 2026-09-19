@@ -52,3 +52,10 @@ prompt
 server.log
 # Skills directory
 /skills/
+# Local database & uploads (not for version control)
+/db/
+/upload/
+/server-monitor.log
+/dev.error.log
+/server.error.log
+/agent-ctx/

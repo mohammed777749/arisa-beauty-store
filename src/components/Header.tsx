@@ -113,7 +113,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-amazon-divider bg-background">
       {/* ===== Top utility bar ===== */}
       <div className="bg-mega-nav text-white">
-        <div className="container mx-auto flex h-14 max-w-7xl items-center gap-3 px-3 text-sm">
+        <div className="container relative mx-auto flex h-14 max-w-7xl items-center gap-3 px-3 text-sm">
           {/* Mobile menu button */}
           <button
             type="button"
@@ -254,10 +254,10 @@ export default function Header() {
             )}
           </button>
 
-          {/* Logo (RTL: appears on the right) */}
+          {/* Logo — centered absolutely in the middle of the top bar */}
           <Link
             href="?view=home"
-            className="flex shrink-0 items-center gap-2 rounded-md px-1.5 py-1 transition hover:bg-white/10"
+            className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-md px-1.5 py-1 transition hover:bg-white/10"
           >
             <Image
               src={BRAND.logo}
