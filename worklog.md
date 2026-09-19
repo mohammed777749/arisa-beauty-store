@@ -304,3 +304,29 @@ The dev server is now managed by PM2 with: auto-restart on crash (verified by ki
 
 ### Stage Summary
 The store is now a dual-purpose platform: e-commerce for products + booking system for beauty services. 18 services seeded across 8 categories (تجهيز العرايس، خدمات الشفاة، العناية بالبشرة، المكياج الاحترافي، خدمات الشعر، خدمات الأظافر، إزالة الشعر، سبا). Customers browse services → view details → book appointment (date/time) → get confirmation. Admin can manage services (CRUD) and bookings (status: pending→confirmed→completed/cancelled). Dashboard shows services/bookings KPIs. All in Arabic RTL, rose/gold theme. Lint passes cleanly.
+
+---
+
+## Task ID: 11
+**Agent name:** Mobile Responsiveness Fix (Z.ai Code main agent)
+**Task description:** Fix mobile responsiveness — dark mode toggle and account/wishlist buttons were hidden on mobile; ensure all views work on small screens without horizontal overflow.
+
+### Work Log
+- **Root cause**: Header buttons used `hidden md:grid` / `hidden md:flex` / `hidden lg:flex` classes which hid them on mobile (< 768px). Specifically: dark mode toggle, wishlist, account dropdown, returns&orders were all invisible on phones.
+- **Fix in `src/components/Header.tsx`**:
+  - Added a dedicated mobile buttons cluster (visible only on `md:hidden`) right after the hamburger menu button: **dark mode toggle** (Sun/Moon), **wishlist** (with badge), **account dropdown** (User icon → full dropdown menu with login/register or account+logout), and **cart** (with badge).
+  - The mobile account dropdown includes: login/register (when logged out) OR customer name + طلباتي/حجوزاتي/قائمة الأمنيات/تسجيل الخروج (when logged in).
+  - Enhanced the mobile slide-out Sheet menu: added حجوزاتي link, login/logout quick button, a "dark mode + greeting" row with a labeled toggle button (نهاري/ليلي), and a "خدماتنا التجميلية" link section.
+  - Added `CalendarCheck` icon import.
+- **Desktop/tablet buttons preserved**: the existing `md:flex` / `md:grid` buttons remain for ≥768px (account dropdown, returns&orders, dark toggle, wishlist, cart).
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Tested on mobile (390×844): header shows 5 buttons — القائمة، تبديل الوضع الليلي، قائمة الأمنيات، حسابي، السلة. Dark mode toggle verified working (light→dark→light).
+- Mobile slide-out menu verified: طلباتي، حجوزاتي، الأمنيات، دخول، dark mode toggle, خدماتنا التجميلية، all categories.
+- Tested on tablet (768×1024): all desktop buttons visible (جلورية، بحث، حسابي والقوائم، تبديل الوضع الليلي، قائمة الأمنيات، السلة، mega-nav).
+- Horizontal overflow = 0 on all tested pages: home, services, shop, cart, checkout, orders, admin.
+- `dev.log` clean.
+
+### Stage Summary
+The store is now fully responsive. All header actions (dark mode toggle, account, wishlist, cart) are accessible on mobile via dedicated `md:hidden` buttons + the slide-out menu. Tablet and desktop layouts unchanged. No horizontal overflow on any page. Lint passes cleanly.

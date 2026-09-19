@@ -27,6 +27,7 @@ import {
   LogOut,
   UserPlus,
   LogIn,
+  CalendarCheck,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,121 @@ export default function Header() {
           >
             <Menu className="size-5" />
           </button>
+
+          {/* Mobile dark mode toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            suppressHydrationWarning
+            className="grid size-9 shrink-0 place-items-center rounded-md transition hover:bg-white/10 md:hidden"
+            aria-label="تبديل الوضع الليلي"
+            title="تبديل الوضع الليلي/النهاري"
+          >
+            <Sun className="size-5 hidden dark:block" />
+            <Moon className="size-5 block dark:hidden" />
+          </button>
+
+          {/* Mobile wishlist */}
+          <button
+            type="button"
+            onClick={() => router.push("?view=wishlist")}
+            className="relative grid size-9 shrink-0 place-items-center rounded-md transition hover:bg-white/10 md:hidden"
+            aria-label="قائمة الأمنيات"
+          >
+            <Heart className="size-5" />
+            {wishlistHydrated && wishlistCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-cta-orange px-1 text-[10px] font-bold text-white">
+                {wishlistCount > 99 ? "99+" : wishlistCount}
+              </span>
+            )}
+          </button>
+
+          {/* Mobile account */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                suppressHydrationWarning
+                className="grid size-9 shrink-0 place-items-center rounded-md transition hover:bg-white/10 md:hidden"
+                aria-label="حسابي"
+              >
+                <User className="size-5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-64 rounded-xl border-border bg-popover p-2 text-right"
+            >
+              {customerHydrated && customer ? (
+                <>
+                  <DropdownMenuLabel className="flex flex-col gap-0.5 text-sm font-extrabold text-foreground">
+                    <span>{customer.name}</span>
+                    <span className="text-[11px] font-normal text-muted-foreground" dir="ltr">{customer.email}</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=orders" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Package className="size-4" /> طلباتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=my-bookings" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <CalendarCheck className="size-4" /> حجوزاتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=wishlist" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Heart className="size-4" /> قائمة الأمنيات
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer justify-end gap-2 rounded-lg text-sm text-rose-600 focus:text-rose-700"
+                    onSelect={() => {
+                      customerLogout();
+                      toast.success("تم تسجيل الخروج");
+                      router.push("?view=home");
+                    }}
+                  >
+                    <LogOut className="size-4" /> تسجيل الخروج
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuLabel className="text-sm font-extrabold text-foreground">
+                    مرحباً بكِ
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=auth" className="cursor-pointer justify-end gap-2 rounded-lg text-sm font-bold text-rose-600">
+                      <LogIn className="size-4" /> تسجيل الدخول
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=auth&mode=register" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <UserPlus className="size-4" /> إنشاء حساب جديد
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=orders" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Package className="size-4" /> طلباتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=my-bookings" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <CalendarCheck className="size-4" /> حجوزاتي
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="?view=wishlist" className="cursor-pointer justify-end gap-2 rounded-lg text-sm">
+                      <Heart className="size-4" /> قائمة الأمنيات
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Mobile cart */}
           <button
@@ -587,6 +703,13 @@ export default function Header() {
                 <Package className="size-4 text-primary" /> طلباتي
               </Link>
               <Link
+                href="?view=my-bookings"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-bold"
+              >
+                <CalendarCheck className="size-4 text-primary" /> حجوزاتي
+              </Link>
+              <Link
                 href="?view=wishlist"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-bold"
@@ -598,7 +721,71 @@ export default function Header() {
                   </span>
                 )}
               </Link>
+              {customerHydrated && customer ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    customerLogout();
+                    toast.success("تم تسجيل الخروج");
+                    setMobileOpen(false);
+                    router.push("?view=home");
+                  }}
+                  className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-bold text-rose-600"
+                >
+                  <LogOut className="size-4" /> خروج
+                </button>
+              ) : (
+                <Link
+                  href="?view=auth"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-bold text-rose-600"
+                >
+                  <LogIn className="size-4" /> دخول
+                </Link>
+              )}
             </div>
+
+            {/* Dark mode + greeting */}
+            <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2.5">
+              <span className="text-xs text-muted-foreground">
+                {customerHydrated && customer
+                  ? `مرحباً، ${customer.name.split(" ")[0]}`
+                  : "مرحباً بكِ في جلورية"}
+              </span>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                suppressHydrationWarning
+                className="flex items-center gap-1.5 rounded-md bg-background px-2.5 py-1.5 text-xs font-bold shadow-sm"
+                aria-label="تبديل الوضع الليلي"
+              >
+                <Sun className="size-3.5 hidden dark:block" />
+                <Moon className="size-3.5 block dark:hidden" />
+                <span suppressHydrationWarning>
+                  {resolvedTheme === "dark" ? "نهاري" : "ليلي"}
+                </span>
+              </button>
+            </div>
+
+            <div className="my-1 h-px bg-border" />
+
+            {/* Services link */}
+            <p className="px-1 text-xs font-extrabold uppercase tracking-wide text-muted-foreground">
+              تسوقي
+            </p>
+            <nav className="flex flex-col gap-0.5">
+              <Link
+                href="?view=services"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold",
+                  "bg-primary/10 text-primary"
+                )}
+              >
+                خدماتنا التجميلية
+                <ChevronLeft className="size-4 text-muted-foreground" />
+              </Link>
+            </nav>
 
             <div className="my-1 h-px bg-border" />
 
