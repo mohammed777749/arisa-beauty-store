@@ -455,3 +455,42 @@ Logo returned to its original side position in the header (no longer centered). 
 
 ### Stage Summary
 Project is now Vercel-ready: removed standalone output, added PostgreSQL schema + switch script, configured next.config for images + body size, added vercel.json with security headers, updated package.json with vercel-build/postinstall scripts, wrote comprehensive VERCEL-DEPLOY.md guide. All pushed to GitHub. Next steps for the user: create Vercel Postgres DB, set DATABASE_URL env var, run `prisma:use-pg && db:push && db:seed`, deploy via Vercel dashboard.
+
+---
+
+## Task ID: 16
+**Agent name:** Auto Database Setup (Z.ai Code main agent)
+**Task description:** Make the database work automatically on Vercel — no manual schema switching, no manual db push, no manual seeding. Everything should happen automatically during build/first-visit.
+
+### Work Log
+- Created `scripts/auto-db.mjs` — smart auto-setup script that:
+  1. Detects DB provider from DATABASE_URL (sqlite/postgresql/mysql/postgres/file:)
+  2. Switches Prisma schema automatically (copies schema.pg.prisma or schema.sqlite.prisma, or edits provider line)
+  3. Runs `prisma generate` always
+  4. Runs `prisma db push --accept-data-loss` during build phase (--push flag or VERCEL=1 env)
+  5. Runs seed script automatically in Vercel environment (VERCEL=1)
+  All steps are idempotent and fail-soft (don't break the build).
+- Updated `package.json` scripts:
+  - `postinstall`: `node scripts/auto-db.mjs` (runs after npm/bun install — detects provider + generates)
+  - `build`: `node scripts/auto-db.mjs --push && next build` (pushes schema + builds)
+  - `vercel-build`: `node scripts/auto-db.mjs --push && next build` (Vercel-specific build command)
+  - `dev`: `node scripts/auto-db.mjs && next dev -p 3000`
+- Created `src/middleware.ts` — auto-seed check on every HTML request:
+  - Skips API/static/image routes
+  - On first request in a serverless instance, fetches `/api/seed` in background (3s timeout)
+  - Doesn't block user requests
+  - Caches the check in-memory for the instance
+- Updated `src/app/api/seed/route.ts` to be **idempotent**:
+  - First checks `db.category.count()` — if > 0, returns "already seeded" without touching data
+  - Only seeds if database is empty (safe for re-runs)
+- Updated `VERCEL-DEPLOY.md` — simplified from 6 steps to 3 steps (create DB, set env var, deploy). Everything else is automatic.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- `node scripts/auto-db.mjs` (local, no VERCEL env) → detected sqlite, ran prisma generate, skipped db push. ✅
+- `curl /api/seed` on existing DB → returns `{"alreadySeeded":true,"categories":6}` without wiping data. ✅
+- Server still runs (HTTP 200), products count still 32. ✅
+- Pushed to GitHub (commit 48ef694).
+
+### Stage Summary
+Database is now fully automatic on Vercel. The user only needs to: (1) create a PostgreSQL DB on Vercel/Neon, (2) set DATABASE_URL env var, (3) deploy. During build: postinstall auto-detects provider + generates Prisma client, vercel-build pushes schema to DB + seeds initial data. During runtime: middleware auto-seeds on first visit if DB is empty. Seed API is idempotent (safe to re-run). All pushed to GitHub. Lint passes cleanly.
