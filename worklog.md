@@ -368,3 +368,28 @@ The store is now fully responsive. All header actions (dark mode toggle, account
 
 ### Stage Summary
 Store rebranded from "جلورية" to "أريسا — BEAUTY SALON / صالون تجميل" using the uploaded logo (also as favicon). Phone +966550828817 added as clickable tel: link in header mobile menu + footer. WhatsApp +966550828817 added as: floating glowing button (bottom-left, pulse animation, quick-message popup), footer link, and social icon. All user-visible text updated across header, footer, views, admin. Database re-seeded with new brand names. Lint passes cleanly.
+
+---
+
+## Task ID: 13
+**Agent name:** WhatsApp position + Logo center + GitHub push (Z.ai Code main agent)
+**Task description:** Move WhatsApp button to the right, center the logo in the header, and push the project to GitHub.
+
+### Work Log
+- **WhatsApp button moved to right**: Updated `src/components/WhatsAppButton.tsx` — changed container from `bottom-5 left-5 items-start` to `bottom-5 right-5 items-end`. Verified position: right:20, bottom:20.
+- **Logo centered in header**: Updated `src/components/Header.tsx` — added `relative` to the top bar container, then made the logo `absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10` so it sits in the exact center regardless of other elements. Verified: logo center matches screen center (39px diff due to text label, acceptable).
+- **GitHub push**:
+  - Updated `.gitignore` to exclude `/db/`, `/upload/`, log files, `/agent-ctx/`.
+  - Removed sensitive files from git tracking: `.env`, `.zscripts/`, `agent-ctx/`.
+  - Created GitHub repo `mohammed777749/arisa-beauty-store` via API (public).
+  - Pushed 195 files to `main` branch.
+  - Removed token from remote URL for security.
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- WhatsApp button: right:20px, bottom:20px (verified via bounding box).
+- Logo: centered in header (verified via bounding box, diff 39px from screen center).
+- GitHub repo: https://github.com/mohammed777749/arisa-beauty-store — 195 files pushed, accessible.
+
+### Stage Summary
+WhatsApp floating button moved to bottom-right. Header logo centered using absolute positioning. Full project (195 files) pushed to GitHub at mohammed777749/arisa-beauty-store. Token secured (removed from git config after push). Lint passes cleanly.
