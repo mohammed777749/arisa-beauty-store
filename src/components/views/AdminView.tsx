@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -76,11 +77,15 @@ function SidebarContent({
     <div className="flex h-full flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-rose-950 text-slate-100">
       {/* Brand */}
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 shadow-lg shadow-rose-900/50">
-          <Sparkles className="size-6 text-white" />
-        </div>
+        <Image
+          src="/images/logo.png"
+          alt="أريسا"
+          width={44}
+          height={44}
+          className="size-11 rounded-xl object-cover shadow-lg"
+        />
         <div>
-          <div className="text-lg font-bold leading-tight text-white">جلورية</div>
+          <div className="text-lg font-bold leading-tight text-white">أريسا</div>
           <div className="text-xs text-rose-300">لوحة التحكم</div>
         </div>
       </div>

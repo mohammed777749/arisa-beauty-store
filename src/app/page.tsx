@@ -22,6 +22,7 @@ import BookingSuccessView from "@/components/views/BookingSuccessView";
 import MyBookingsView from "@/components/views/MyBookingsView";
 import AdminView from "@/components/views/AdminView";
 import AuthView from "@/components/views/AuthView";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const KNOWN_VIEWS = [
   "home",
@@ -64,6 +65,7 @@ function PageInner() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <CartDrawer onCheckout={() => router.push("?view=checkout")} />
+      <WhatsAppButton />
       <main className="flex-1">
         {view === "home" && <HomeView />}
         {view === "shop" && <ShopView />}

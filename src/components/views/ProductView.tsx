@@ -257,7 +257,7 @@ export default function ProductView() {
               {p.isChoice && (
                 <Badge className="bg-primary text-primary-foreground">
                   <Crown className="size-3.5" />
-                  اختيار جلورية
+                  اختيار أريسا
                 </Badge>
               )}
               {p.isBestseller && (
@@ -482,11 +482,11 @@ export default function ProductView() {
               <div className="space-y-1 text-xs">
                 <p className="flex items-center justify-between">
                   <span className="text-muted-foreground">الشحن من</span>
-                  <span className="font-bold">جلورية</span>
+                  <span className="font-bold">أريسا</span>
                 </p>
                 <p className="flex items-center justify-between">
                   <span className="text-muted-foreground">بائع</span>
-                  <span className="font-bold">جلورية</span>
+                  <span className="font-bold">أريسا</span>
                 </p>
                 <p className="flex items-center justify-between">
                   <span className="text-muted-foreground">المرتجعات</span>

@@ -12,7 +12,7 @@ export default function HeroSection() {
       <div className="relative h-[60vh] min-h-[460px] w-full overflow-hidden md:h-[78vh] md:min-h-[560px]">
         <Image
           src="/images/hero.jpg"
-          alt="جلورية - متجر التجميل الفاخر"
+          alt="أريسا - صالون التجميل والمستحضرات الفاخرة"
           fill
           priority
           sizes="100vw"
@@ -41,7 +41,7 @@ export default function HeroSection() {
               </span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/90 drop-shadow sm:text-lg">
-              اكتشفي عالم جلورية من المكياج الفاخر والعطور الساحرة والعناية
+              اكتشفي عالم أريسا من المكياج الفاخر والعطور الساحرة والعناية
               المتكاملة. منتجات أصلية مختارة بعناية لتبرز جمالك الطبيعي.
             </p>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -40,6 +41,7 @@ import {
 import { useTheme } from "next-themes";
 import { useCustomerAuth } from "@/store/customer-auth";
 import { toast } from "sonner";
+import { BRAND, phoneLink } from "@/lib/brand";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -257,13 +259,17 @@ export default function Header() {
             href="?view=home"
             className="flex shrink-0 items-center gap-2 rounded-md px-1.5 py-1 transition hover:bg-white/10"
           >
-            <span className="grid size-9 place-items-center rounded-md bg-cta-gold text-primary shadow-amazon">
-              <Sparkles className="size-5" />
-            </span>
+            <Image
+              src={BRAND.logo}
+              alt={BRAND.nameAr}
+              width={36}
+              height={36}
+              className="size-9 rounded-md object-cover shadow-amazon"
+            />
             <div className="hidden flex-col leading-none sm:flex">
-              <span className="text-lg font-extrabold text-white">جلورية</span>
+              <span className="text-lg font-extrabold text-white">{BRAND.nameAr}</span>
               <span className="text-[9px] font-medium tracking-widest text-gold">
-                GLAMOUR BEAUTY
+                {BRAND.taglineEn}
               </span>
             </div>
           </Link>
@@ -307,7 +313,7 @@ export default function Header() {
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground sm:right-auto sm:left-3" />
             <Input
               type="search"
-              placeholder="ابحثي في جلورية..."
+              placeholder={`ابحثي في ${BRAND.nameAr}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="h-10 rounded-none border-0 bg-transparent pr-9 text-sm shadow-none focus-visible:ring-0 sm:pr-3"
@@ -661,8 +667,14 @@ export default function Header() {
           <SheetHeader className="bg-mega-nav p-5 text-white">
             <SheetTitle className="flex items-center justify-between text-lg font-extrabold text-white">
               <span className="flex items-center gap-2">
-                <Sparkles className="size-5 text-gold" />
-                جلورية
+                <Image
+                  src={BRAND.logo}
+                  alt={BRAND.nameAr}
+                  width={32}
+                  height={32}
+                  className="size-8 rounded-md object-cover"
+                />
+                {BRAND.nameAr}
               </span>
               <button
                 type="button"
@@ -750,7 +762,7 @@ export default function Header() {
               <span className="text-xs text-muted-foreground">
                 {customerHydrated && customer
                   ? `مرحباً، ${customer.name.split(" ")[0]}`
-                  : "مرحباً بكِ في جلورية"}
+                  : `مرحباً بكِ في ${BRAND.nameAr}`}
               </span>
               <button
                 type="button"
@@ -826,7 +838,7 @@ export default function Header() {
             {/* Help */}
             <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 p-3 text-[11px] text-muted-foreground">
               <Phone className="size-3.5 text-primary" />
-              خدمة العملاء: <span dir="ltr" className="font-bold">+966 92 000 0000</span>
+              خدمة العملاء: <a href={phoneLink()} dir="ltr" className="font-bold text-primary">{BRAND.phoneDisplay}</a>
             </div>
           </div>
         </SheetContent>

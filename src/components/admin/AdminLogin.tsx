@@ -56,7 +56,7 @@ export default function AdminLogin() {
               <Sparkles className="size-8 text-white" />
             </div>
             <h1 className="mt-4 text-2xl font-extrabold text-slate-900">
-              لوحة تحكم جلورية
+              لوحة تحكم أريسا
             </h1>
             <p className="mt-1 text-sm text-slate-500">
               الرجاء إدخال كلمة السر للمتابعة

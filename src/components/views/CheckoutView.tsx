@@ -489,7 +489,7 @@ export default function CheckoutView() {
                   <div className="mt-4 rounded-xl bg-muted/30 p-4 text-sm text-muted-foreground">
                     <p className="font-bold text-foreground">تفاصيل التحويل:</p>
                     <p>البنك الأهلي السعودي — حساب رقم 1234567890</p>
-                    <p>اسم الحساب: متجر جلورية للتجميل</p>
+                    <p>اسم الحساب: متجر أريسا للتجميل</p>
                     <p className="mt-1 text-xs">
                       يرجى إرسال إيصال التحويل على واتساب خدمة العملاء لتأكيد الطلب.
                     </p>

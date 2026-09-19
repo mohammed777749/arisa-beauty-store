@@ -59,7 +59,7 @@ export default function AuthView() {
       if (mode === "register") {
         const res = register({ name, email, phone, password });
         if (res.ok) {
-          toast.success("تم إنشاء حسابك بنجاح! مرحباً بكِ في جلورية");
+          toast.success("تم إنشاء حسابك بنجاح! مرحباً بكِ في أريسا");
           router.push("?view=home");
         } else {
           toast.error(res.error ?? "فشل التسجيل");
@@ -67,7 +67,7 @@ export default function AuthView() {
       } else {
         const res = login(email, password);
         if (res.ok) {
-          toast.success("مرحباً بعودتكِ إلى جلورية");
+          toast.success("مرحباً بعودتكِ إلى أريسا");
           // Go back to where they came from, or home
           const dest = cartCount > 0 ? "?view=cart" : "?view=home";
           router.push(dest);
@@ -97,13 +97,13 @@ export default function AuthView() {
             </div>
             <div>
               <h2 className="text-2xl font-extrabold text-rose-700 dark:text-rose-300">
-                جلورية
+                أريسا
               </h2>
-              <p className="text-xs text-muted-foreground">GLAMOUR BEAUTY</p>
+              <p className="text-xs text-muted-foreground">BEAUTY SALON</p>
             </div>
           </div>
           <h1 className="mt-6 text-3xl font-extrabold leading-tight text-foreground md:text-4xl">
-            انضمي إلى عائلة جلورية
+            انضمي إلى عائلة أريسا
           </h1>
           <p className="mt-3 text-muted-foreground">
             أنشئي حسابكِ لتتبعي طلباتكِ، احفظي عناوينكِ، وتسوقي بسهولة وسرعة.

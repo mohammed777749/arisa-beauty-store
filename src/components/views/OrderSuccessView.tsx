@@ -94,7 +94,7 @@ export default function OrderSuccessView() {
             تم تأكيد طلبك بنجاح!
           </h1>
           <p className="mt-2 text-sm text-white/90">
-            شكراً لثقتك بجلورية. سنبدأ بمعالجة طلبك فوراً.
+            شكراً لثقتك بأريسا. سنبدأ بمعالجة طلبك فوراً.
           </p>
           {orderNumber && (
             <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm backdrop-blur">

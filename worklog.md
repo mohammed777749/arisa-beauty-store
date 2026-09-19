@@ -330,3 +330,41 @@ The store is now a dual-purpose platform: e-commerce for products + booking syst
 
 ### Stage Summary
 The store is now fully responsive. All header actions (dark mode toggle, account, wishlist, cart) are accessible on mobile via dedicated `md:hidden` buttons + the slide-out menu. Tablet and desktop layouts unchanged. No horizontal overflow on any page. Lint passes cleanly.
+
+---
+
+## Task ID: 12
+**Agent name:** Branding + WhatsApp Button (Z.ai Code main agent)
+**Task description:** Replace store branding with the uploaded logo (name "ARISA" / "أريسا", tagline "BEAUTY SALON" / "صالون تجميل"), add phone/WhatsApp number +966550828817, and add a glowing floating WhatsApp button.
+
+### Work Log
+- Analyzed the uploaded logo via VLM CLI: extracted name "ARISA", tagline "BEAUTY SALON", design (rose gold metallic gradient, crown icon, dark teal background, luxury feel).
+- Copied logo to `public/images/logo.png` (449×450 PNG).
+- Created `src/lib/brand.ts` centralized branding constants: nameAr="أريسا", nameEn="ARISA", taglineAr="صالون تجميل", taglineEn="BEAUTY SALON", logo path, phone="+966550828817", phoneDisplay="+966 55 082 8817", whatsapp="966550828817", email, social links. Exports `whatsappLink(message?)` and `phoneLink()` helpers + `WHATSAPP_DEFAULT_MESSAGE`.
+- Created `src/components/WhatsAppButton.tsx` — floating glowing button (bottom-left for RTL) with: pulsing ping ring + glow keyframe animation, green WhatsApp color (#25D366), notification badge, and a popup chat with quick-message presets (حجز موعد، استفسار عن المنتجات، أسعار تجهيز العرايس، التوصيل) + direct chat link to wa.me.
+- Updated `src/app/page.tsx`: renders `<WhatsAppButton />` on all public views (not admin).
+- Updated `src/app/layout.tsx`: metadata title → "أريسا | صالون التجميل ومتجر المستحضرات الفاخرة", Arabic description, keywords include "صالون تجميل" + "تجهيز عرايس", icons set to /images/logo.png (favicon + apple touch).
+- Updated `src/components/Header.tsx`: logo image replaces Sparkles icon (desktop + mobile sheet), brand name "أريسا", tagline "BEAUTY SALON", search placeholder "ابحثي في أريسا...", greeting "مرحباً بكِ في أريسا", customer-service phone link to tel:+966550828817.
+- Updated `src/components/Footer.tsx`: logo image, brand name, description (mentions products + services + خبيرات معتمدات), contact section with phone link (tel:), WhatsApp link (wa.me), email, social icons (WhatsApp added first in green), copyright "أريسا — صالون تجميل".
+- Updated `src/components/views/AdminView.tsx`: sidebar brand uses logo image + "أريسا" name.
+- Updated `src/components/admin/AdminLogin.tsx`: title "لوحة تحكم أريسا".
+- Bulk-replaced "جلورية" → "أريسا" and "GLAMOUR BEAUTY" → "BEAUTY SALON" across all view files + admin components (HeroSection, HomeView, ShopView, ProductView, ServicesView, CheckoutView, OrderSuccessView, AuthView, SearchView, AdminProducts, ProductForm).
+- Updated `src/lib/seed-data.ts` brand names: "جلورية" → "أريسا", "جلورية لوكس" → "أريسا لوكس". Re-seeded database → verified brand="أريسا".
+- Kept localStorage keys as "glamour-*" (cart, admin-auth, customer-auth) to not break existing user sessions — these are internal, not user-visible.
+
+### Bug fix
+- `WhatsAppButton.tsx` initial version used `useEffect(() => setMounted(true))` which triggered `react-hooks/set-state-in-effect` lint error. Fixed by removing the mounted flag entirely (the button is pure client UI with no hydration-sensitive content — `useState` for open is enough).
+
+### Verification
+- `bun run lint` → ✅ passes cleanly.
+- Logo image served at /images/logo.png (77KB).
+- Header displays: logo image + "أريسا" + "BEAUTY SALON". Search placeholder "ابحثي في أريسا...". 
+- Footer displays: logo + "أريسا" + "BEAUTY SALON" + phone "+966 55 082 8817" (clickable tel:) + "تواصلي عبر واتساب" (clickable wa.me) + email + copyright "أريسا — صالون تجميل".
+- WhatsApp button: floating bottom-left, glowing pulse animation, opens popup with quick messages, all link to wa.me/966550828817.
+- Database re-seeded: 6 categories, 32 products (brand="أريسا"), 172 reviews, 18 services.
+- Favicon = /images/logo.png.
+- No remaining "جلورية" references in user-visible code.
+- dev.log clean.
+
+### Stage Summary
+Store rebranded from "جلورية" to "أريسا — BEAUTY SALON / صالون تجميل" using the uploaded logo (also as favicon). Phone +966550828817 added as clickable tel: link in header mobile menu + footer. WhatsApp +966550828817 added as: floating glowing button (bottom-left, pulse animation, quick-message popup), footer link, and social icon. All user-visible text updated across header, footer, views, admin. Database re-seeded with new brand names. Lint passes cleanly.

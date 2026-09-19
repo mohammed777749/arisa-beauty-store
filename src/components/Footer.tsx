@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   Sparkles,
   Instagram,
@@ -14,10 +15,12 @@ import {
   Truck,
   Shield,
   RefreshCw,
+  MessageCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { BRAND, phoneLink, whatsappLink } from "@/lib/brand";
 
 const valueProps = [
   { icon: Truck, title: "شحن مجاني", desc: "للطلبات فوق ٢٠٠ ر.س" },
@@ -60,7 +63,7 @@ const columns = [
     ],
   },
   {
-    title: "عن جلورية",
+    title: `عن ${BRAND.nameAr}`,
     links: [
       { label: "من نحن", href: "?view=home" },
       { label: "سياسة الخصوصية", href: "?view=home" },
@@ -102,22 +105,26 @@ export default function Footer() {
           {/* Brand + newsletter */}
           <div className="col-span-2 lg:col-span-2">
             <Link href="?view=home" className="flex items-center gap-2">
-              <span className="grid size-11 place-items-center rounded-full bg-primary-gradient text-white shadow-rose">
-                <Sparkles className="size-5" />
-              </span>
+              <Image
+                src={BRAND.logo}
+                alt={BRAND.nameAr}
+                width={44}
+                height={44}
+                className="size-11 rounded-full object-cover shadow-rose"
+              />
               <div className="flex flex-col leading-none">
                 <span className="text-2xl font-extrabold text-primary">
-                  جلورية
+                  {BRAND.nameAr}
                 </span>
                 <span className="text-[10px] font-medium tracking-widest text-gold">
-                  GLAMOUR BEAUTY
+                  {BRAND.taglineEn}
                 </span>
               </div>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              جلورية متجرك الأول للتجميل الفاخر في المملكة العربية السعودية.
-              نختار لكِ أرقى مستحضرات المكياج والعناية والعطور من ماركات عالمية
-              موثوقة، لتعيشي تجربة جمال استثنائية.
+              {BRAND.nameAr} — وجهتكِ الأولى للتجميل الفاخر في المملكة العربية
+              السعودية. منتجات أصلية وخدمات تجميل احترافية على أيدي خبيرات
+              معتمدات، لتعيشي تجربة جمال استثنائية.
             </p>
 
             <form
@@ -149,16 +156,33 @@ export default function Footer() {
 
             {/* Contact */}
             <ul className="mt-6 space-y-2 text-sm">
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="size-4 text-primary" />
-                <span dir="ltr">+966 92 000 0000</span>
+              <li>
+                <a
+                  href={phoneLink()}
+                  className="flex items-center gap-2 text-muted-foreground transition hover:text-primary"
+                  dir="ltr"
+                >
+                  <Phone className="size-4 shrink-0 text-primary" />
+                  {BRAND.phoneDisplay}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={whatsappLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground transition hover:text-[#25D366]"
+                >
+                  <MessageCircle className="size-4 shrink-0 text-[#25D366]" />
+                  <span>تواصلي عبر واتساب</span>
+                </a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="size-4 text-primary" />
-                <span>care@glamour.sa</span>
+                <Mail className="size-4 shrink-0 text-primary" />
+                <span>{BRAND.email}</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="size-4 text-primary" />
+                <MapPin className="size-4 shrink-0 text-primary" />
                 <span>الرياض، المملكة العربية السعودية</span>
               </li>
             </ul>
@@ -191,15 +215,26 @@ export default function Footer() {
             <span className="text-sm font-bold text-muted-foreground">
               تابعينا:
             </span>
+            <a
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="grid size-9 place-items-center rounded-full bg-[#25D366] text-white transition hover:scale-110"
+            >
+              <MessageCircle className="size-4" />
+            </a>
             {[
-              { Icon: Instagram, label: "Instagram" },
-              { Icon: Twitter, label: "Twitter" },
-              { Icon: Facebook, label: "Facebook" },
-              { Icon: Youtube, label: "Youtube" },
-            ].map(({ Icon, label }) => (
+              { Icon: Instagram, label: "Instagram", href: BRAND.instagram },
+              { Icon: Twitter, label: "Twitter", href: BRAND.twitter },
+              { Icon: Facebook, label: "Facebook", href: BRAND.facebook },
+              { Icon: Youtube, label: "Youtube", href: BRAND.youtube },
+            ].map(({ Icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="grid size-9 place-items-center rounded-full bg-muted text-foreground transition hover:bg-primary hover:text-primary-foreground"
               >
@@ -226,10 +261,10 @@ export default function Footer() {
       {/* Copyright */}
       <div className="border-t border-border/60 bg-background/60">
         <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-center text-xs text-muted-foreground md:flex-row md:text-right">
-          <p>© {new Date().getFullYear()} جلورية. جميع الحقوق محفوظة.</p>
+          <p>© {new Date().getFullYear()} {BRAND.nameAr} — {BRAND.taglineAr}. جميع الحقوق محفوظة.</p>
           <p>
             صُنع بحب في المملكة العربية السعودية —{" "}
-            <span className="text-gold">GLAMOUR BEAUTY</span>
+            <span className="text-gold">{BRAND.taglineEn}</span>
           </p>
         </div>
       </div>

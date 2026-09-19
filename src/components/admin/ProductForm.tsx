@@ -57,7 +57,7 @@ const EMPTY: ProductFormValues = {
   images: [],
   categoryId: "",
   stock: 50,
-  brand: "جلورية",
+  brand: "أريسا",
   shades: [],
   isFeatured: false,
   isBestseller: false,
@@ -396,7 +396,7 @@ export default function ProductForm({
                   onCheckedChange={(v) => set("isNew", v)}
                 />
                 <SwitchRow
-                  label="اختيار جلورية"
+                  label="اختيار أريسا"
                   checked={values.isChoice}
                   onCheckedChange={(v) => set("isChoice", v)}
                 />

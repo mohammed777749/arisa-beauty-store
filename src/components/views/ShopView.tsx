@@ -126,7 +126,7 @@ export default function ShopView() {
   const brands = useMemo(() => {
     // Derive brand list from currently loaded categories' products (limited; better: separate API)
     // Fallback to common brands
-    return ["جلورية", "جلورية لوكس"];
+    return ["أريسا", "أريسا لوكس"];
   }, []);
 
   const showShades = category === "lips" || category === "nails";

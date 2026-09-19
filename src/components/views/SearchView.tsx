@@ -119,7 +119,7 @@ export default function SearchView() {
     };
   }, [q, category, sort, minPrice, maxPrice, rating, brand, prime, inStock, page]);
 
-  const brands = useMemo(() => ["جلورية", "جلورية لوكس"], []);
+  const brands = useMemo(() => ["أريسا", "أريسا لوكس"], []);
   const showShades = category === "lips" || category === "nails";
 
   const onSortChange = (v: string) => {

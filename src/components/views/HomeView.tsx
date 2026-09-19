@@ -150,8 +150,8 @@ export default function HomeView() {
         <section className="bg-rose-gradient py-10">
           <div className="container mx-auto max-w-7xl px-4">
             <SectionHeader
-              eyebrow="مختارات جلورية"
-              title="اختيار جلورية"
+              eyebrow="مختارات أريسا"
+              title="اختيار أريسا"
               subtitle="منتجات انتقاها فريق الجمال لتجربة استثنائية"
               viewAllHref="?view=shop&isChoice=true"
             />
@@ -163,7 +163,7 @@ export default function HomeView() {
       {/* Featured */}
       <section className="container mx-auto max-w-7xl px-4 py-10">
         <SectionHeader
-          eyebrow="مختارات جلورية"
+          eyebrow="مختارات أريسا"
           title="منتجات مميزة"
           subtitle="أبرز منتجاتنا التي اختارها فريق الجمال لدينا خصيصاً لكِ"
           viewAllHref="?view=shop"
@@ -238,7 +238,7 @@ export default function HomeView() {
           <SectionHeader
             eyebrow="وصل حديثاً"
             title="أحدث المنتجات"
-            subtitle="كن أول من يجرب أحدث وصولات جلورية"
+            subtitle="كن أول من يجرب أحدث وصولات أريسا"
             viewAllHref="?view=shop&sort=newest"
           />
           <ProductGrid products={newArrivals} loading={loading} />
@@ -248,7 +248,7 @@ export default function HomeView() {
       {/* Brand values */}
       <section className="container mx-auto max-w-7xl px-4 py-10">
         <SectionHeader
-          eyebrow="لماذا جلورية؟"
+          eyebrow="لماذا أريسا؟"
           title="تجربة تسوق استثنائية"
           subtitle="نحرص على راحتك في كل خطوة"
         />
@@ -303,7 +303,7 @@ export default function HomeView() {
           <SectionHeader
             eyebrow="آراء عميلاتنا"
             title="ماذا قالت عنّا عميلاتنا"
-            subtitle="تجارب حقيقية من نساء اخترن جلورية"
+            subtitle="تجارب حقيقية من نساء اخترن أريسا"
           />
           <div className="grid gap-4 md:grid-cols-3">
             {[

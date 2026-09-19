@@ -102,7 +102,7 @@ export default function ServicesView() {
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-1.5 text-xs font-bold text-primary shadow-soft">
               <Sparkles className="size-4 text-gold" />
-              مركز جلورية للتجميل
+              مركز أريسا للتجميل
             </span>
             <h1 className="mt-4 text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
               خدماتنا التجميلية

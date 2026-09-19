@@ -280,7 +280,7 @@ export default function AdminProducts() {
                             <Badge className="bg-emerald-100 text-emerald-700">جديد</Badge>
                           )}
                           {p.isChoice && (
-                            <Badge className="bg-purple-100 text-purple-700">اختيار جلورية</Badge>
+                            <Badge className="bg-purple-100 text-purple-700">اختيار أريسا</Badge>
                           )}
                           {p.prime && (
                             <Badge variant="outline" className="border-slate-300 text-slate-600">
