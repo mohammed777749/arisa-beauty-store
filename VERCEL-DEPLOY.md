@@ -2,6 +2,14 @@
 
 هذا الدليل يشرح كيفية نشر متجر أريسا على استضافة Vercel الحقيقية خطوة بخطوة.
 
+## 🎉 الأتمتة الكاملة
+قاعدة البيانات تعمل **تلقائياً** الآن! لا حاجة لتبديل يدوي للمخطط أو دفع المخطط أو التهيئة. عند النشر على Vercel:
+- ✅ سكريبت `auto-db.mjs` يكتشف نوع قاعدة البيانات من `DATABASE_URL` ويبدّل المخطط تلقائياً
+- ✅ `db push` يُشغّل تلقائياً في مرحلة البناء لإنشاء الجداول
+- ✅ Middleware يهيّئ البيانات الأولية تلقائياً عند أول زيارة إذا كانت قاعدة البيانات فارغة
+
+---
+
 ## 📋 المتطلبات
 
 1. حساب [Vercel](https://vercel.com) (مجاني)
@@ -12,7 +20,7 @@
 
 ## 🗄️ الخطوة ١: إنشاء قاعدة بيانات PostgreSQL
 
-### الخيار أ: Vercel Postgres (الأسهل)
+### الخيار أ: Vercel Postgres (الأسهل — موصى به)
 
 1. ادخلي على [vercel.com/dashboard](https://vercel.com/dashboard)
 2. أنشئي مشروعاً جديداً → اختاري **Storage** → **Create Database** → **Postgres**
@@ -34,79 +42,30 @@
 
 | المتغير | القيمة | ملاحظة |
 |---------|--------|--------|
-| `DATABASE_URL` | `postgresql://...` | من الخطوة ١ |
+| `DATABASE_URL` | `postgresql://...` | من الخطوة ١ — **هذا كل ما تحتاجينه!** |
 
-> **ملاحظة**: بقية الإعدادات (الشعار، الهاتف، الواتساب) مدمجة في الكود `src/lib/brand.ts`. لتغييرها عدّلي الملف وأعيدي الرفع.
-
----
-
-## 🔧 الخطوة ٣: تبديل قاعدة البيانات إلى PostgreSQL
-
-قبل النشر، يجب تبديل مخطط Prisma من SQLite إلى PostgreSQL:
-
-```bash
-# محلياً — للتأكد أن البناء سيعمل على Vercel
-bun run prisma:use-pg
-
-# هذا ينسخ prisma/schema.pg.prisma إلى prisma/schema.prisma
-# ثم يشغل prisma generate
-
-# للعودة إلى SQLite (للتطوير المحلي):
-bun run prisma:use-sqlite
-```
-
-> **طريقة بديلة على Vercel**: في إعدادات المشروع → **Build Command**:
-> ```
-> bun run prisma:use-pg && bun run vercel-build
-> ```
+> **ملاحظة**: بقية الإعدادات (الشعار، الهاتف، الواتساب) مدمجة في الكود `src/lib/brand.ts`.
 
 ---
 
-## 📥 الخطوة ٤: دفع المخطط إلى قاعدة البيانات
-
-بعد إنشاء قاعدة البيانات على Vercel، ادفعي المخطط:
-
-```bash
-# محلياً — تأكدي أن DATABASE_URL يشير إلى PostgreSQL
-export DATABASE_URL="postgresql://..."  # من Vercel
-bun run prisma:use-pg
-bun run db:push
-
-# هذا ينشئ كل الجداول في قاعدة البيانات
-```
-
----
-
-## 🌱 الخطوة ٥: تهيئة البيانات الأولية
-
-بعد دفع المخطط، شغّلي سكريبت التهيئة لإدراج المنتجات والخدمات:
-
-```bash
-# شغّلي السكريبت محلياً مع DATABASE_URL لـ PostgreSQL
-export DATABASE_URL="postgresql://..."
-bun run db:seed
-
-# أو عبر API (بعد النشر):
-curl https://your-domain.vercel.app/api/seed
-```
-
-سيُدرج: ٦ فئات، ٣٢ منتجاً، ١٧٢ مراجعة، ١٨ خدمة تجميل.
-
----
-
-## 🚀 الخطوة ٦: النشر على Vercel
+## 🚀 الخطوة ٣: النشر (تلقائي بالكامل)
 
 ### الطريقة أ: عبر GitHub (موصى بها — نشر تلقائي)
 
 1. ادخلي [vercel.com/new](https://vercel.com/new)
-2. اختاري **Import Git Repository**
-3. اختاري `mohammed777749/arisa-beauty-store`
-4. في إعدادات المشروع:
+2. اختاري **Import Git Repository** → `mohammed777749/arisa-beauty-store`
+3. في إعدادات المشروع:
    - **Framework Preset**: Next.js (يُكشف تلقائياً)
-   - **Build Command**: `bun run vercel-build` (أو اتركيه افتراضياً)
+   - **Build Command**: `bun run vercel-build` (أو اتركيه افتراضياً — Vercel سيستخدم `package.json`)
    - **Install Command**: `bun install` (أو `npm install`)
    - **Environment Variables**: أضيفي `DATABASE_URL`
-5. اضغطي **Deploy**
+4. اضغطي **Deploy** ✨
+
+**ما يحدث تلقائياً أثناء البناء:**
+1. `postinstall` → `auto-db.mjs` يكتشف PostgreSQL ويبدّل المخطط + `prisma generate`
+2. `vercel-build` → `auto-db.mjs --push` يدير المخطط + يدفع الجداول + يهيّئ البيانات الأولية
+3. `next build` يبني التطبيق
+4. عند أول زيارة → middleware يتحقق من قاعدة البيانات ويهيئها إذا كانت فارغة
 
 ### الطريقة ب: عبر Vercel CLI
 
@@ -119,48 +78,39 @@ vercel login
 
 # من مجلد المشروع
 cd /home/z/my-project
-vercel
 
-# اتبعي التعليمات — Vercel سيكتشف Next.js تلقائياً
-# أضيفي DATABASE_URL عند السؤال عن Environment Variables
-
-# للنشر للإنتاج:
+# النشر (سيطلب DATABASE_URL)
 vercel --prod
 ```
 
 ---
 
-## ⚠️ ملاحظات مهمة
+## ✅ انتهى! لا حاجة لخطوات إضافية
 
-### ١. نظام الملفات للقراءة فقط
-Vercel لا يسمح بالكتابة على نظام الملفات. المشروع يستخدم:
-- ✅ **قاعدة البيانات**: PostgreSQL (يعمل)
-- ✅ **localStorage**: للسلة والمفضلة وكلمة سر الأدمن (يعمل في المتصفح)
-- ⚠️ **الصور المرفوعة**: تُحفظ كـ Base64 في قاعدة البيانات (يعمل، لكن للحجم الكبير استخدمي Vercel Blob)
+بعد النشر، متجرك سيعمل على: `https://arisa-beauty-store.vercel.app`
 
-### ٢. الصور المرفوعة (Base64)
-الصور المرفوعة من لوحة التحكم تُحفظ كـ Base64 في قاعدة البيانات. هذا يعمل على Vercel لكن:
-- ✅ بسيط ولا يحتاج إعداد إضافي
-- ⚠️ يضخّم قاعدة البيانات
-- للحجم الكبير: استخدمي [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) (مدفوع)
-
-### ٣. تحديد حجم الطلب
-تم تعيين `bodySizeLimit: "10mb"` في `next.config.ts` لدعم رفع الصور.
-
-### ٤. المنطقة
-`vercel.json` يحدد `sin1` (سنغافورة) كمنطقة. لتغييرها عدّلي الملف. المناطق المتاحة: `iad1` (شرق أمريكا)، `sfo1` (غرب أمريكا)، `fra1` (فرانكفورت)، `sin1` (سنغافورة).
+ستجدين:
+- ✅ ٦ فئات منتجات
+- ✅ ٣٢ منتجاً مع الأسعار والصور
+- ✅ ١٧٢ مراجعة عربية
+- ✅ ١٨ خدمة تجميل
+- ✅ لوحة تحكم محمية بكلمة سر (`admin1234`)
+- ✅ كل الميزات تعمل
 
 ---
 
-## 🔄 التحديثات
+## ⚠️ ملاحظات
 
-كل دفعة (push) إلى فرع `main` على GitHub ستُطلق نشراً تلقائياً على Vercel.
+### الصور المرفوعة
+الصور المرفوعة من لوحة التحكم تُحفظ كـ Base64 في قاعدة البيانات — يعمل على Vercel بدون إعداد إضافي. للحجم الكبير استخدمي [Vercel Blob](https://vercel.com/docs/storage/vercel-blob).
 
+### المنطقة
+`vercel.json` يحدد `sin1` (سنغافورة). لتغييرها عدّلي الملف.
+
+### التحديثات
+كل `git push` إلى `main` يطلق نشراً تلقائياً:
 ```bash
-git add -A
-git commit -m "تحديث"
-git push origin main
-# Vercel سينشر تلقائياً
+git add -A && git commit -m "تحديث" && git push origin main
 ```
 
 ---
@@ -169,23 +119,32 @@ git push origin main
 
 | المشكلة | الحل |
 |---------|------|
-| `PrismaClientInitializationError` | تأكدي من `DATABASE_URL` صحيح + شغّلي `bun run prisma:use-pg` |
-| `Database doesn't exist` | شغّلي `bun run db:push` بعد ضبط `DATABASE_URL` |
-| صفحة فارغة بعد النشر | راجعي Vercel Function Logs |
-| `Module not found` | شغّلي `bun install` محلياً + ارفعي `package.json` |
-| أخطاء TypeScript | `next.config.ts` يتجاهل أخطاء البناء (`ignoreBuildErrors: true`) |
+| `PrismaClientInitializationError` | تأكدي من `DATABASE_URL` صحيح في Vercel env vars |
+| صفحة فارغة | راجعي Vercel → Functions → Logs |
+| البيانات فارغة بعد النشر | الموقع سيهيّئها تلقائياً عند أول زيارة، أو شغّلي: `curl https://your-app.vercel.app/api/seed` |
+| `Database doesn't exist` | تأكدي من إنشاء قاعدة البيانات على Vercel Postgres أولاً |
+| أخطاء TypeScript | `next.config.ts` يتجاهل أخطاء البناء |
 
 ---
 
-## ✅ قائمة التحقق قبل النشر
+## 🔧 الأتمتة المُطبّقة (تفاصيل تقنية)
 
-- [ ] إنشاء قاعدة بيانات PostgreSQL على Vercel/Neon
-- [ ] إضافة `DATABASE_URL` في Environment Variables
-- [ ] تشغيل `bun run prisma:use-pg` محلياً
-- [ ] دفع المخطط: `bun run db:push`
-- [ ] تهيئة البيانات: `bun run db:seed`
-- [ ] رفع التغييرات لـ GitHub: `git push`
-- [ ] تأكيد النشر على Vercel
-- [ ] زيارة الرابط والتحقق من العمل
+### `scripts/auto-db.mjs`
+سكريبت ذكي يُشغّل في:
+- `postinstall` (بعد تثبيت الحزم)
+- `dev` (عند تشغيل الخادم محلياً)
+- `build` و `vercel-build` (مرحلة البناء)
 
-بعد إكمال هذه الخطوات، متجرك سيعمل على: `https://arisa-beauty-store.vercel.app` 🌹
+يقوم بـ:
+1. **اكتشاف نوع قاعدة البيانات** من `DATABASE_URL` (sqlite/postgresql/mysql)
+2. **تبديل المخطط** تلقائياً (ينسخ `schema.pg.prisma` أو `schema.sqlite.prisma`)
+3. **`prisma generate`** دائماً
+4. **`db push`** في مرحلة البناء فقط (`--push` flag أو `VERCEL=1`)
+5. **التهيئة التلقائية للبيانات** في بيئة Vercel (optional `--seed`)
+
+### `src/middleware.ts`
+يتحقق من كل طلب HTML — إذا كانت قاعدة البيانات فارغة، يستدعي `/api/seed` تلقائياً في الخلفية. آمن: لا يوقف الطلب، ويتخطى API/الملفات الثابتة.
+
+### `src/app/api/seed/route.ts` (idempotent)
+أصبح idempotent — يتحقق أولاً إذا كانت البيانات موجودة، ويتخطى التهيئة. آمن للتشغيل المتكرر.
+

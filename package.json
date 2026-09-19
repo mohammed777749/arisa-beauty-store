@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "prisma generate && next build",
+    "dev": "node scripts/auto-db.mjs && next dev -p 3000",
+    "build": "node scripts/auto-db.mjs --push && next build",
     "start": "next start -p $PORT",
     "lint": "eslint .",
     "db:push": "prisma db push --accept-data-loss",
@@ -14,8 +14,8 @@
     "db:seed": "node --experimental-strip-types prisma/seed.ts",
     "prisma:use-pg": "node scripts/switch-db.mjs pg",
     "prisma:use-sqlite": "node scripts/switch-db.mjs sqlite",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build"
+    "postinstall": "node scripts/auto-db.mjs",
+    "vercel-build": "node scripts/auto-db.mjs --push && next build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
